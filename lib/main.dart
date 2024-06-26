@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
     return {
       'color': Color.fromARGB(200,10* index, 2* index, 5* index),
       'index': index,
+      'isMonth': index % 20 == 0 && index != 0,
     };
   });
 

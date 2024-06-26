@@ -17,34 +17,63 @@ class Squares extends StatelessWidget {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
+    int index = 0;
+    int weekIndex = 1;
+    List<Widget> months = [];
+    List<Widget> currentRow = [];
+    List<Widget> monthRows = [];
+    while(index < squareData.length){
+      currentRow.add(SquareItem(
+        counter: squareData[index]["index"],
+        color: squareData[index]["color"],
+        isMonth: squareData[index]["isMonth"],
+      ));
+      if(squareData[index]["isMonth"]){
+        monthRows.add(Row(
+          children: currentRow,
+        ),);
+        currentRow = [];
+        months.add(const Divider(
+          thickness: 15.0,
+          color: Colors.transparent,
+        ));
+        months.add(const Text(
+          "Text"
+        ));
+        months.add(Column(
+          children: monthRows,
+        ));
+        monthRows = [];
+        weekIndex = 0;
+      }
+      if(weekIndex == 7) {
+        monthRows.add(Row(
+          children: currentRow,
+        ),);
+        currentRow = [];
+        weekIndex = 0;
+      }
+      index++;
+      weekIndex++;
+    }
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _scrollToBottom(context);
     });
 
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: GridView.builder(
+        child: ListView.builder(
+          itemCount: months.length,
           controller: controller,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7, // Number of squares in a row
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
-            ),
-          itemCount: squareData.length,
-          itemBuilder: (context, index) {
-            final item = squareData[index];
-            if(index % 10 == 0){
-              return Column(
-                children: [
-
-                ],
-              );
-            }
-            return SquareItem(counter: item['index'], color: item['color']);
-          },
+          itemBuilder: (context, index)
+           {
+             return months[index];
+           },
         )
       )
     );
@@ -52,10 +81,11 @@ class Squares extends StatelessWidget {
 }
 
 class SquareItem extends StatefulWidget {
-  SquareItem({super.key, required this.counter, required this.color});
+  SquareItem({super.key, required this.counter, required this.color, required this.isMonth});
 
   int counter;
   final Color color;
+  final bool isMonth;
 
   @override
   State<SquareItem> createState() => _SquareItemState();
@@ -76,16 +106,19 @@ class _SquareItemState extends State<SquareItem> {
     return GestureDetector(
       onTap: _incrementCounter,
 
-    child: Container(
-      decoration: BoxDecoration(
-        color: widget.color,
-        borderRadius: BorderRadius.circular(8.0)
-      ),
-      width: 50.0,
-      height: 50.0,
-      child: Center(
-          child: Text(widget.counter.toString())
-      ),
+    child: Padding(
+      padding: EdgeInsets.all(2.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.color,
+          borderRadius: BorderRadius.circular(8.0)
+        ),
+        width: 45.0,
+        height: 45.0,
+        child: Center(
+            child: Text(widget.isMonth.toString())
+        ),
+      )
     )
     );
   }
