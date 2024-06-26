@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'appcolors.dart';
 
 class Squares extends StatelessWidget {
   final List<Map<String, dynamic>> squareData;
@@ -26,11 +25,6 @@ class Squares extends StatelessWidget {
     List<Widget> currentRow = [];
     List<Widget> monthRows = [];
     while(index < squareData.length){
-      currentRow.add(SquareItem(
-        counter: squareData[index]["index"],
-        color: squareData[index]["color"],
-        isMonth: squareData[index]["isMonth"],
-      ));
       if(squareData[index]["isMonth"]){
         monthRows.add(Row(
           children: currentRow,
@@ -40,8 +34,8 @@ class Squares extends StatelessWidget {
           thickness: 15.0,
           color: Colors.transparent,
         ));
-        months.add(const Text(
-          "Text"
+        months.add(Text(
+          squareData[index]['month']
         ));
         months.add(Column(
           children: monthRows,
@@ -56,6 +50,9 @@ class Squares extends StatelessWidget {
         currentRow = [];
         weekIndex = 0;
       }
+      currentRow.add(SquareItem(
+          data: squareData[index]
+      ));
       index++;
       weekIndex++;
     }
@@ -81,11 +78,9 @@ class Squares extends StatelessWidget {
 }
 
 class SquareItem extends StatefulWidget {
-  SquareItem({super.key, required this.counter, required this.color, required this.isMonth});
+  SquareItem({super.key, required this.data});
 
-  int counter;
-  final Color color;
-  final bool isMonth;
+  final Map<String, dynamic> data;
 
   @override
   State<SquareItem> createState() => _SquareItemState();
@@ -97,7 +92,7 @@ class _SquareItemState extends State<SquareItem> {
 
   void _incrementCounter() {
     setState(() {
-      widget.counter++;
+      widget.data['index']++;
     });
   }
 
@@ -110,13 +105,13 @@ class _SquareItemState extends State<SquareItem> {
       padding: EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.color,
+          color: widget.data['color'],
           borderRadius: BorderRadius.circular(8.0)
         ),
         width: 45.0,
         height: 45.0,
         child: Center(
-            child: Text(widget.isMonth.toString())
+            child: Text(widget.data['date'].day.toString())
         ),
       )
     )

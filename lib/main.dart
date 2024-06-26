@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'squares.dart';
-import 'appcolors.dart';
 
 void main() {
   runApp(const SquaredAway());
@@ -37,13 +37,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> squareData = List.generate(200, (index) {
-    return {
-      'color': Color.fromARGB(200,10* index, 2* index, 5* index),
-      'index': index,
-      'isMonth': index % 20 == 0 && index != 0,
-    };
-  });
+  List<Map<String, dynamic>> generateDateList(DateTime startDate) {
+    List<Map<String, dynamic>> result = [];
+    int count = DateTime.now().difference(startDate).inDays + 1;
+    for (int i = 0; i < count; i++) {
+      DateTime date = startDate.add(Duration(days: i));
+      result.add({
+        'date': date,
+        'month': DateFormat("MMMM").format(date),
+        'index': i,
+        'isMonth': date.day == 1,
+        'color': Color.fromARGB(200,100, 2* i, 100),
+      });
+    }
+    return result;
+  }
+
 
   int _pageIndex = 0;
   void _onItemTapped(int index) {
@@ -58,7 +67,7 @@ class _HomePageState extends State<HomePage> {
 
     switch (_pageIndex) {
       case 0:
-        currentWidget = Squares(squareData: squareData); // Replace with your widget for index 0
+        currentWidget = Squares(squareData: generateDateList(DateTime(2024, 1, 1))); // Replace with your widget for index 0
         break;
       case 1:
         currentWidget = const Placeholder(color: Colors.blueGrey); // Replace with your widget for index 1
@@ -74,7 +83,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.appBackground,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
         title: Text(widget.title),
@@ -87,20 +95,20 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-              icon:  Text("Squares"),
-              label: "one"
+              icon:  Icon(Icons.square, color: Colors.white),
+              label: ""
           ),
           BottomNavigationBarItem(
-              icon: Text("Summary"),
-              label: "two"
+              icon:  Icon(Icons.stacked_bar_chart, color: Colors.white),
+              label: ""
           ),
           BottomNavigationBarItem(
-              icon: Text("Tasks"),
-              label: "three"
+              icon:  Icon(Icons.list, color: Colors.white),
+              label: ""
           ),
           BottomNavigationBarItem(
-              icon: Text("Categories"),
-              label: "four"
+              icon:  Icon(Icons.star, color: Colors.white),
+              label: ""
           ),
         ],
       ),
