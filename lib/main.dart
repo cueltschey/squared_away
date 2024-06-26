@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'squares.dart';
+import 'list.dart';
 
 void main() {
   runApp(const SquaredAway());
@@ -37,21 +38,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  List<List<int>> getTasksPairs(List<Map<String, dynamic>> tasks){
+    List<List<int>> result = [];
+    for(Map<String, dynamic> item in tasks){
+      List<int> pair = [];
+      pair.add(0);
+      pair.add(item['index']);
+      result.add(pair);
+    }
+    return result;
+  }
+
   List<Map<String, dynamic>> generateDateList(DateTime startDate) {
     List<Map<String, dynamic>> result = [];
-    int count = DateTime.now().difference(startDate).inDays + 1;
+    DateTime current = DateTime.now();
+    int count = current.difference(startDate).inDays;
     for (int i = 0; i < count; i++) {
       DateTime date = startDate.add(Duration(days: i));
       result.add({
         'date': date,
-        'month': DateFormat("MMMM").format(date),
-        'index': i,
+        'month': DateFormat("MMMM").format(DateTime(date.year, date.month - 1)),
         'isMonth': date.day == 1,
-        'color': Color.fromARGB(200,100, 2* i, 100),
+        'tasks': getTasksPairs(tasks),
       });
     }
+    result.last['isMonth'] = true;
+    result.last['month'] = DateFormat("MMMM").format(DateTime.now());
     return result;
   }
+
+  List<Map<String, dynamic>> tasks = List.generate(5,(index) {
+    return {
+      'name': 'test',
+      'category': 4,
+      'index': index,
+      'hidden': false
+    };
+  });
 
 
   int _pageIndex = 0;
@@ -67,26 +91,24 @@ class _HomePageState extends State<HomePage> {
 
     switch (_pageIndex) {
       case 0:
-        currentWidget = Squares(squareData: generateDateList(DateTime(2024, 1, 1))); // Replace with your widget for index 0
+        DateTime now = DateTime.now();
+        currentWidget = Squares(squareData: generateDateList(DateTime(now.year, now.month - 1, 1)), taskList: tasks); // Replace with your widget for index 0
         break;
       case 1:
-        currentWidget = const Placeholder(color: Colors.blueGrey); // Replace with your widget for index 1
+        DateTime now = DateTime.now();
+        currentWidget = Text(generateDateList(DateTime(now.year, now.month - 1, 1)).toString());
         break;
       case 2:
-        currentWidget = const Placeholder(color: Colors.greenAccent); // Replace with your widget for index 2
+        currentWidget = TaskList();
         break;
       case 3:
-        currentWidget = const Placeholder(color: Colors.orangeAccent); // Replace with your widget for index 3
+        currentWidget = TypeList();
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
     }
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        title: Text(widget.title),
-      ),
       body: Center(
         child: currentWidget,
       ),
