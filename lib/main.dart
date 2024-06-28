@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:squared_away/statistics.dart';
 import 'squares.dart';
 import 'list.dart';
 
@@ -50,15 +51,15 @@ class _HomePageState extends State<HomePage> {
     return result;
   }
 
-  List<Map<String, dynamic>> generateDateList(DateTime startDate) {
+  List<Map<String, dynamic>> fillMissingSquares(DateTime startDate) {
     List<Map<String, dynamic>> result = [];
     DateTime current = DateTime.now();
-    int count = current.difference(startDate).inDays;
+    int count = current.difference(startDate).inDays + 2;
     for (int i = 0; i < count; i++) {
       DateTime date = startDate.add(Duration(days: i));
       result.add({
         'date': date,
-        'month': DateFormat("MMMM").format(DateTime(date.year, date.month - 1)),
+        'month': DateFormat("MMMM").format(DateTime(date.year, date.month)),
         'isMonth': date.day == 1,
         'tasks': getTasksPairs(tasks),
       });
@@ -68,20 +69,63 @@ class _HomePageState extends State<HomePage> {
     return result;
   }
 
-  List<Map<String, dynamic>> tasks = List.generate(5,(index) {
-    return {
-      'name': 'test',
-      'category': 4,
-      'index': index,
-      'hidden': false
-    };
-  });
+  List<Map<String, dynamic>> tasks = [];
+  List<Map<String, dynamic>> squareData = [];
+  List<Map<String, dynamic>> categories = [];
 
+  @override
+  void initState(){
+    super.initState();
+    tasks = List.generate(5,(index) {
+      return {
+        'name': 'Example Task',
+        'category': 4,
+        'index': index,
+        'hidden': false
+      };
+    });
+    categories = List.generate(5,(index) {
+      return {
+        'name': 'Example Category',
+        'id': index,
+        'color': Colors.primaries[index]
+      };
+    });
+    squareData = fillMissingSquares(DateTime(2023));
+  }
 
   int _pageIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
       _pageIndex = index; // Update the selected index
+    });
+  }
+
+  void setTaskCallback(int squareIndex, int taskIndex, int value){
+    setState(() {
+      squareData[squareIndex]['tasks'][taskIndex][0] = value;
+    });
+  }
+
+  void addCategoryCallback(String categoryName, Color selectedColor){
+    setState(() {
+      categories.add({
+        'name': categoryName,
+        'id': categories.length,
+        'color': selectedColor
+      });
+    });
+  }
+
+  void addTaskCallback(String taskName, int categoryId){
+    setState(() {
+      squareData[squareData.length - 2]['tasks'].add([0,tasks.length]);
+      tasks.add({
+        'name':  taskName,
+        'category': categoryId,
+        'index': tasks.length,
+        'hidden': false,
+      });
     });
   }
 
@@ -92,17 +136,17 @@ class _HomePageState extends State<HomePage> {
     switch (_pageIndex) {
       case 0:
         DateTime now = DateTime.now();
-        currentWidget = Squares(squareData: generateDateList(DateTime(now.year, now.month - 1, 1)), taskList: tasks); // Replace with your widget for index 0
+        currentWidget = Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback); // Replace with your widget for index 0
         break;
       case 1:
-        DateTime now = DateTime.now();
-        currentWidget = Text(generateDateList(DateTime(now.year, now.month - 1, 1)).toString());
+        //currentWidget = Text("text");
+        currentWidget = Statistics(taskList: tasks, typeList: categories, squareData: squareData);
         break;
       case 2:
-        currentWidget = TaskList();
+        currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, typeList: categories);
         break;
       case 3:
-        currentWidget = TypeList();
+        currentWidget = TypeList(typeList: categories, addNewType: addCategoryCallback);
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
@@ -115,22 +159,28 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,
         onTap: _onItemTapped,
+        selectedItemColor: Colors.white,
+        elevation: 20.0,
+        backgroundColor: Color.fromARGB(200, 34, 34, 34),
+        selectedIconTheme: const IconThemeData(
+          color: Colors.yellow,
+        ),
         items: const [
           BottomNavigationBarItem(
               icon:  Icon(Icons.square, color: Colors.white),
-              label: ""
+              label: "Squares"
           ),
           BottomNavigationBarItem(
               icon:  Icon(Icons.stacked_bar_chart, color: Colors.white),
-              label: ""
+              label: "Statistics"
           ),
           BottomNavigationBarItem(
               icon:  Icon(Icons.list, color: Colors.white),
-              label: ""
+              label: "Habits"
           ),
           BottomNavigationBarItem(
               icon:  Icon(Icons.star, color: Colors.white),
-              label: ""
+              label: "Categories"
           ),
         ],
       ),
