@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,10 +12,14 @@ class Squares extends StatelessWidget {
   Squares({super.key, required this.squareData, required this.taskList, required this.setTaskCallback, ScrollController? controller})
       : this.controller = controller ?? ScrollController();
 
-  void _scrollToBottom(BuildContext context) {
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (controller.hasClients) {
-        controller.jumpTo(controller.position.maxScrollExtent);
+      if (controller.position.pixels < controller.position.maxScrollExtent) {
+        controller.animateTo(
+          controller.position.maxScrollExtent + 1000,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn,
+        );
       }
     });
   }
@@ -98,22 +104,29 @@ class Squares extends StatelessWidget {
       weekIndex++;
     }
 
+    months.add(const Divider(thickness: 30.0, color: Colors.transparent,));
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom(context);
+      _scrollToBottom();
     });
 
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.small(
+          onPressed: _scrollToBottom,
+          child: Icon(Icons.arrow_downward, color: Colors.white),
+          backgroundColor: Colors.transparent,
+        ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: ListView.builder(
-          itemCount: months.length,
+        child:  SingleChildScrollView(
           controller: controller,
-          itemBuilder: (context, index)
-           {
-             return months[index];
-           },
-        )
+          child: Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0,
+            children: months,
+          ),
+        ),
       )
     );
   }
@@ -258,20 +271,28 @@ class _EditSquareState extends State<EditSquare> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar: AppBar(title: Text(
-          DateFormat("EEEE").format(widget.data['date']) + " "
-          + widget.data['month'] + " "
-          + widget.data['date'].day.toString() + ", "
-          + widget.data['date'].year.toString())
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          DateFormat("EEEE").format(widget.data['date']) +
+              " " +
+              widget.data['month'] +
+              " " +
+              widget.data['date'].day.toString() +
+              ", " +
+              widget.data['date'].year.toString(),
+        ),
       ),
       body: ListView.builder(
         itemCount: widget.data['tasks'].length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(widget.taskList[index]['name'] + " : " + widget.taskList[index]['category'].toString()),
-            subtitle: Text(widget.taskList[index]['category'].toString()),
+            title: Text(
+              widget.taskList[index]['name'],
+              style: TextStyle(color: widget.taskList[index]['color']),
+            ),
             trailing: Checkbox(
               value: _isCheckedList[index],
               onChanged: (bool? isChecked) {
@@ -280,6 +301,13 @@ class _EditSquareState extends State<EditSquare> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Icon(Icons.check, color: Colors.green),
+        backgroundColor: Colors.transparent,
       ),
     );
   }
