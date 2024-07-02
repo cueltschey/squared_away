@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/another.squares');
+    File newFile = File('$path/test_b.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> fillMissingSquares(DateTime startDate) {
     List<Map<String, dynamic>> result = [];
     DateTime current = DateTime.now();
-    int count = current.difference(startDate).inDays + 2;
+    int count = current.difference(startDate).inDays + 1;
     for (int i = 0; i < count; i++) {
       DateTime date = startDate.add(Duration(days: i));
       result.add({
@@ -116,8 +116,6 @@ class _HomePageState extends State<HomePage> {
         'tasks': getTasksPairs(tasks),
       });
     }
-    result.last['isMonth'] = true;
-    result.last['month'] = DateFormat("MMMM").format(DateTime.now());
     return result;
   }
 
@@ -174,6 +172,9 @@ class _HomePageState extends State<HomePage> {
            'tasks': taskList,
          });
        }
+       if(squareData.last['date'].difference(DateTime.now()).inDays > 0){
+           squareData.addAll(fillMissingSquares(squareData.last['date']));
+       }
       }
 
     });
@@ -201,7 +202,7 @@ class _HomePageState extends State<HomePage> {
 
   void addTaskCallback(String taskName, Color newColor){
     setState(() {
-      squareData[squareData.length - 2]['tasks'].add([0,tasks.length]);
+      squareData.last['tasks'].add([0,tasks.length]);
       tasks.add({
         'name':  taskName,
         'index': tasks.length,
@@ -215,6 +216,11 @@ class _HomePageState extends State<HomePage> {
   removeTaskCallback(int index){
     setState(() {
       tasks[index]['hidden'] = true;
+      for(int i = 0; i < squareData.last['tasks'].length; i++){
+        if(squareData.last['tasks'][i][1] == index){
+          squareData.last['tasks'].removeAt(i);
+        }
+      }
     });
   }
 
@@ -240,7 +246,7 @@ class _HomePageState extends State<HomePage> {
           {
             writeTaskList(tasks, squareData)
           },
-          child: Text("Debug:    ")
+          child: Text("Debug:    " + tasks.last.toString())
         );
         break;
       default:

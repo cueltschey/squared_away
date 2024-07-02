@@ -98,11 +98,19 @@ class Squares extends StatelessWidget {
           percentage: getPercentage(squareData[index]['tasks']),
           squareIndex: index,
           setTaskCallback: setTaskCallback,
-          isHighlighted: index == squareData.length - 2
+          isHighlighted: index == squareData.length - 1
       ));
       index++;
       weekIndex++;
     }
+
+    monthRows.add(Row(
+      children: currentRow,
+    ));
+
+    months.add(Column(
+      children: monthRows,
+    ));
 
     months.add(const Divider(thickness: 30.0, color: Colors.transparent,));
 
@@ -122,6 +130,7 @@ class Squares extends StatelessWidget {
         child:  SingleChildScrollView(
           controller: controller,
           child: Wrap(
+            direction: Axis.horizontal,
             spacing: 8.0,
             runSpacing: 4.0,
             children: months,
@@ -290,8 +299,16 @@ class _EditSquareState extends State<EditSquare> {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(
-              widget.taskList[index]['name'],
-              style: TextStyle(color: widget.taskList[index]['color']),
+              widget.taskList.firstWhere(
+                  (element) => element['index'] == widget.data['tasks'][index][1],
+                  orElse: null,
+              )['name'],
+              style: TextStyle(
+                  color: widget.taskList.firstWhere(
+                      (element) => element['index'] == widget.data['tasks'][index][1],
+                      orElse: null,
+                  )['color']
+              ),
             ),
             trailing: Checkbox(
               value: _isCheckedList[index],
@@ -301,13 +318,6 @@ class _EditSquareState extends State<EditSquare> {
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Icon(Icons.check, color: Colors.green),
-        backgroundColor: Colors.transparent,
       ),
     );
   }
