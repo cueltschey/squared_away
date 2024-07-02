@@ -19,7 +19,7 @@ class _StatisticsState extends State<Statistics> {
 
   List<Map<String, dynamic>> getDataFromDateOffset(List<Map<String, dynamic>> data, int daysOffset) {
     List<Map<String, dynamic>> result = [];
-    int index = data.length - 2;
+    int index = data.length - 1;
     int count = 0;
     while (count < daysOffset && index >= 0) {
       result.add(data[index]);
@@ -125,7 +125,7 @@ class _StatisticsState extends State<Statistics> {
                   _selectedIndex = _items.indexOf(newValue);
                   List<Map<String, dynamic>> newData = [];
                   if(_selectedIndex == 3){
-                    newData = widget.squareData;
+                    newData = getDataFromDateOffset(widget.squareData, 1000000);
                   } else if(_selectedIndex == 2){
                     newData = getDataFromDateOffset(widget.squareData, 365);
                   } else if(_selectedIndex == 1){
@@ -210,7 +210,7 @@ class LineChartState extends State<_LineChart>{
         borderData: borderData,
         lineBarsData: lineBarsData1,
         minX: 0,
-        maxX: 14,
+        maxX: widget.monthData.length.toDouble(),
         maxY: 4,
         minY: 0,
       );
@@ -337,10 +337,8 @@ class LineChartState extends State<_LineChart>{
       );
 
 
-  List<FlSpot> currentData = [];
-  @override
-  void initState() {
-    super.initState();
+  void calculateCurrentData(){
+    currentData = [];
     for(int i = 0; i < widget.monthData.length; i++){
       double total = 0;
       for(int j = 0; j < widget.monthData[i]['tasks'].length; j++){
@@ -351,11 +349,26 @@ class LineChartState extends State<_LineChart>{
     }
   }
 
+  List<FlSpot> currentData = [];
+  @override
+  void initState() {
+    super.initState();
+    calculateCurrentData();
+  }
+
+  @override
+  void didUpdateWidget(covariant _LineChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(widget.monthData != oldWidget.monthData){
+      calculateCurrentData();
+    }
+  }
+
   LineChartBarData get lineChartBarData1_1 =>
       LineChartBarData(
         isCurved: true,
-        color: Colors.red,
-        barWidth: 8,
+        color: Colors.white,
+        barWidth: 4,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
@@ -391,7 +404,10 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),
-                  child: _LineChart(monthData: widget.monthData,),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: _LineChart(monthData: widget.monthData,),
+                  )
                 ),
               ),
               const SizedBox(
