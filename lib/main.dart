@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:squared_away/journal.dart';
 import 'package:squared_away/statistics.dart';
 import 'squares.dart';
 import 'list.dart';
@@ -215,10 +216,21 @@ class _HomePageState extends State<HomePage> {
   
   removeTaskCallback(int index){
     setState(() {
-      tasks[index]['hidden'] = true;
-      for(int i = 0; i < squareData.last['tasks'].length; i++){
-        if(squareData.last['tasks'][i][1] == index){
-          squareData.last['tasks'].removeAt(i);
+      int numVisible = 0;
+      for(int i = 0; i < tasks.length; i++){
+        if(!tasks[i]['hidden']){
+          numVisible += 1;
+          if(numVisible > 1){
+           break;
+          }
+        }
+      }
+      if(numVisible > 1){
+        tasks[index]['hidden'] = true;
+        for(int i = 0; i < squareData.last['tasks'].length; i++){
+          if(squareData.last['tasks'][i][1] == index){
+            squareData.last['tasks'].removeAt(i);
+          }
         }
       }
     });
@@ -234,20 +246,13 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback); // Replace with your widget for index 0
         break;
       case 1:
-        //currentWidget = Text("text");
-        currentWidget = Statistics(taskList: tasks, squareData: squareData);
-        break;
-      case 2:
         currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback,);
         break;
+      case 2:
+        currentWidget = Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback);
+        break;
       case 3:
-        currentWidget = GestureDetector(
-          onTap: () =>
-          {
-            writeTaskList(tasks, squareData)
-          },
-          child: Text("Debug:    " + tasks.last.toString())
-        );
+        currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
@@ -268,20 +273,20 @@ class _HomePageState extends State<HomePage> {
         ),
         items: const [
           BottomNavigationBarItem(
-              icon:  Icon(Icons.square, color: Colors.white),
+              icon:  Icon(Icons.auto_awesome_motion_outlined, color: Colors.white),
               label: "Squares"
           ),
           BottomNavigationBarItem(
-              icon:  Icon(Icons.stacked_bar_chart, color: Colors.white),
-              label: "Statistics"
-          ),
-          BottomNavigationBarItem(
-              icon:  Icon(Icons.list, color: Colors.white),
+              icon:  Icon(Icons.auto_awesome_outlined, color: Colors.white),
               label: "Habits"
           ),
           BottomNavigationBarItem(
-              icon:  Icon(Icons.star, color: Colors.white),
-              label: "Categories"
+              icon:  Icon(Icons.auto_awesome_mosaic_outlined, color: Colors.white),
+              label: "Journal"
+          ),
+          BottomNavigationBarItem(
+              icon:  Icon(Icons.analytics_rounded, color: Colors.white),
+              label: "Statistics"
           ),
         ],
       ),

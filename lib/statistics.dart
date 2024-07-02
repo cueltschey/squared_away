@@ -367,7 +367,16 @@ class LineChartState extends State<_LineChart>{
   LineChartBarData get lineChartBarData1_1 =>
       LineChartBarData(
         isCurved: true,
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [
+            Colors.deepPurple,
+            Colors.blue,
+            Colors.green,
+            Colors.yellow,
+            Colors.orange,
+            Colors.red,
+          ]
+        ),
         barWidth: 4,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
