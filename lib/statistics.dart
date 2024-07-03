@@ -68,10 +68,10 @@ class _StatisticsState extends State<Statistics> {
       }
     }
     colorList = [
-      Colors.green,
-      Colors.indigo,
-      Colors.brown,
-      Colors.red,
+      Color.fromARGB(255, 26, 120, 63),
+      Color.fromARGB(230, 54, 106, 94),
+      Color.fromARGB(230, 74, 82, 74),
+      Color.fromARGB(200, 34, 34, 34),
     ];
   }
 
@@ -408,12 +408,7 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const SizedBox(
-                height: 40,
-              ),
-              const SizedBox(
-                height: 40,
-              ),
+              SizedBox(height: 30,),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),
@@ -423,9 +418,6 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
                     child: _LineChart(monthData: widget.monthData,),
                   )
                 ),
-              ),
-              const SizedBox(
-                height: 10,
               ),
             ],
           ),

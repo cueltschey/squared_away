@@ -287,10 +287,10 @@ class _SquareItemState extends State<SquareItem> {
       toInt(calculateColorComponent(100, widget.percentage[0] / widget.percentage[1])),
     );
     if(widget.percentage[0] == 0){
-      squareColor = Color.fromARGB(150, 34, 34, 34);
+      squareColor = const Color.fromARGB(150, 34, 34, 34);
     }
     if(widget.percentage[0] == widget.percentage[1]){
-      squareColor = Color.fromARGB(255, 26, 120, 63);
+      squareColor = const Color.fromARGB(255, 26, 120, 63);
     }
     if(widget.isHighlighted){
       textColor = Colors.yellow;

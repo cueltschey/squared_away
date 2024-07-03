@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/test_b.sqr');
+    File newFile = File('$path/local.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -138,6 +138,7 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic> allData = await _readData();
     setState(() {
       if (allData['tasks'] == null) {
+        /*
         tasks  = List.generate(5, (index) {
           return {
             'name': 'Example Task',
@@ -146,6 +147,39 @@ class _HomePageState extends State<HomePage> {
             'color': Colors.indigo
           };
         });
+         */
+        tasks = [
+          {
+            'name': 'Workout',
+            'index': 0,
+            'hidden': false,
+            'color': Colors.pink
+          },
+          {
+            'name': 'Read',
+            'index': 1,
+            'hidden': false,
+            'color': Colors.brown
+          },
+          {
+            'name': 'Study',
+            'index': 2,
+            'hidden': false,
+            'color': Colors.green
+          },
+          {
+            'name': 'Clean',
+            'index': 3,
+            'hidden': false,
+            'color': Colors.blue
+          },
+          {
+            'name': 'Create',
+            'index': 4,
+            'hidden': false,
+            'color': Colors.yellow
+          },
+        ];
       }
       else{
         for(int i = 0; i < allData['tasks'].length; i++){
