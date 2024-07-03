@@ -57,94 +57,169 @@ class Journal extends StatelessWidget {
     List<Widget> months = [];
     List<Widget> currentRow = [];
     List<Widget> monthRows = [];
-    while (index < squareData.length) {
-      if (squareData[index]["isMonth"]) {
-        if (index != 0) {
+    while(index < squareData.length){
+      if(squareData[index]["isMonth"]){
+        if(index != 0){
           months.add(const Divider(
             thickness: 15.0,
             color: Colors.transparent,
           ));
-          months.add(Text(squareData[index - 1]['month']));
+          months.add(Text(
+              squareData[index - 1]['month']
+          ));
+          months.add(
+              Row(
+                children: [
+                  Padding(padding: const EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("S"))),
+                  ),
+                  Padding(padding: const EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("M"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("T"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("W"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("Th"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("F"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("Sa"))),
+                  ),
+                ],
+              )
+          );
         }
 
         monthRows.add(Row(
           children: currentRow,
-        ));
+        ),);
         currentRow = [];
+
 
         months.add(Column(
           children: monthRows,
         ));
         monthRows = [];
-
         String weekDay = DateFormat('EEEE').format(squareData[index]['date']);
         weekIndex = weekdayToPadding[weekDay] ?? 0;
-
-        for (int i = 0; i < weekIndex; i++) {
-          currentRow.add(
-            Padding(
-              padding: EdgeInsets.all(2.0),
-              child: Container(
+        for(int i = 0; i < weekIndex; i++){
+          currentRow.add(Padding(padding: EdgeInsets.all(2.0),
+              child:Container(
                 width: 45,
                 height: 45,
                 decoration: BoxDecoration(
-                  border: Border.all(width: 4, color: Colors.transparent),
+                    border: Border.all(width: 4, color: Colors.transparent)
                 ),
-              ),
-            ),
-          );
+              )));
         }
       }
-
-      if (weekIndex == 7) {
-        monthRows.add(
-          Row(
-            children: currentRow,
-          ),
-        );
+      if(weekIndex == 7) {
+        monthRows.add(Row(
+          children: currentRow,
+        ),);
         currentRow = [];
         weekIndex = 0;
       }
-
-      currentRow.add(
-        JournalItem(
+      currentRow.add(JournalItem(
           data: squareData[index],
           taskList: taskList,
           percentage: getPercentage(squareData[index]['tasks']),
           squareIndex: index,
           setTaskCallback: setTaskCallback,
-          isHighlighted: index == squareData.length - 1,
-        ),
-      );
-
+          isHighlighted: index == squareData.length - 1
+      ));
       index++;
       weekIndex++;
     }
 
-    monthRows.add(
-      Row(
-        children: currentRow,
-      ),
-    );
-
+    months.add(const Divider(
+      thickness: 15.0,
+      color: Colors.transparent,
+    ));
+    months.add(Text(
+        squareData[index - 1]['month']
+    ));
     months.add(
-      Column(
-        children: monthRows,
-      ),
+        Row(
+          children: [
+            Padding(padding: const EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("S"))),
+            ),
+            Padding(padding: const EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("M"))),
+            ),Padding(padding: EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("T"))),
+            ),Padding(padding: EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("W"))),
+            ),Padding(padding: EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("Th"))),
+            ),Padding(padding: EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("F"))),
+            ),Padding(padding: EdgeInsets.all(2.0),
+              child: Container(width: 45, height: 45,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.transparent)
+                  ),child: const Center(child: Text("Sa"))),
+            ),
+          ],
+        )
     );
 
-    months.add(const Divider(thickness: 30.0, color: Colors.transparent));
+    monthRows.add(Row(
+      children: currentRow,
+    ));
+
+    months.add(Column(
+      children: monthRows,
+    ));
+
+    months.add(const Divider(thickness: 30.0, color: Colors.transparent,));
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _scrollToBottom();
     });
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: _scrollToBottom,
-        child: Icon(Icons.arrow_downward, color: Colors.white),
-        backgroundColor: Colors.transparent,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
@@ -190,6 +265,7 @@ class _JournalItemState extends State<JournalItem> {
       MaterialPageRoute(
         builder: (context) => EditJournal(
           pathString: filePath,
+          setFileExists: _setFileExistsCallback,
         ),
       ),
     );
@@ -212,22 +288,24 @@ class _JournalItemState extends State<JournalItem> {
   String filePath = "";
   bool fileExists = true;
 
+  void _setFileExistsCallback(bool exists){
+    setState(() {
+      fileExists = exists;
+    });
+  }
+
   void _setFilePath() async {
     final basePath = await _localPath;
     setState(() {
-      filePath = basePath + "/" + widget.data['date'].year.toString() + "-" + widget.data['date'].month.toString() + "-" + widget.data['date'].day.toString() + ".md";
+      filePath = widget.data['date'].year.toString() + "-" + widget.data['date'].month.toString() + "-" + widget.data['date'].day.toString() + ".md";
     });
-    File openedFile = File(filePath);
-    if(await openedFile.exists()){
-      setState(() {
-        fileExists = true;
-      });
-    }
-    else {
-      setState(() {
-        fileExists = false;
-      });
-    }
+    File openedFile = File(basePath + '/' +  filePath);
+    print(filePath);
+    bool doesExist = await openedFile.exists() && await openedFile.readAsString() != "";
+    print(doesExist);
+    setState(() {
+      fileExists = doesExist;
+    });
   }
   @override
   void initState() {
@@ -271,7 +349,7 @@ class _JournalItemState extends State<JournalItem> {
           width: 45.0,
           height: 45.0,
           child: Center(
-            child: fileExists ? Icon(Icons.book) : Icon(Icons.disabled_by_default)
+            child: fileExists ? Icon(Icons.book) : Icon(Icons.book_outlined)
           ),
         ),
       ),
@@ -283,8 +361,9 @@ ScrollController _scroll_controller = ScrollController();
 
 class EditJournal extends StatefulWidget {
   final String pathString;
+  final Function(bool) setFileExists;
 
-  EditJournal({super.key, required this.pathString});
+  EditJournal({super.key, required this.pathString, required this.setFileExists});
 
   @override
   _EditJournalState createState() => _EditJournalState();
@@ -385,6 +464,11 @@ class _EditJournalState extends State<EditJournal> {
     final basePath = await _localPath;
     File file = File('$basePath/${widget.pathString}');
     await file.writeAsString(_markdownText);
+    if(_markdownText != ""){
+      widget.setFileExists(true);
+    } else{
+      widget.setFileExists(false);
+    }
   }
   @override
   void dispose() {

@@ -39,7 +39,6 @@ class Squares extends StatelessWidget {
     List<Widget> monthRows = [];
     while(index < squareData.length){
       if(squareData[index]["isMonth"]){
-
         if(index != 0){
           months.add(const Divider(
             thickness: 15.0,
@@ -48,6 +47,49 @@ class Squares extends StatelessWidget {
           months.add(Text(
               squareData[index - 1]['month']
           ));
+          months.add(
+              Row(
+                children: [
+                  Padding(padding: const EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("S"))),
+                  ),
+                  Padding(padding: const EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("M"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("T"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("W"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("Th"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("F"))),
+                  ),Padding(padding: EdgeInsets.all(2.0),
+                    child: Container(width: 45, height: 45,
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 4, color: Colors.transparent)
+                        ),child: const Center(child: Text("Sa"))),
+                  ),
+                ],
+              )
+          );
         }
 
         monthRows.add(Row(
@@ -91,6 +133,57 @@ class Squares extends StatelessWidget {
       index++;
       weekIndex++;
     }
+
+    months.add(const Divider(
+      thickness: 15.0,
+      color: Colors.transparent,
+    ));
+    months.add(Text(
+        squareData[index - 1]['month']
+    ));
+    months.add(
+    Row(
+      children: [
+          Padding(padding: const EdgeInsets.all(2.0),
+            child: Container(width: 45, height: 45,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 4, color: Colors.transparent)
+                ),child: const Center(child: Text("S"))),
+          ),
+        Padding(padding: const EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("M"))),
+        ),Padding(padding: EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("T"))),
+        ),Padding(padding: EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("W"))),
+        ),Padding(padding: EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("Th"))),
+        ),Padding(padding: EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("F"))),
+        ),Padding(padding: EdgeInsets.all(2.0),
+          child: Container(width: 45, height: 45,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 4, color: Colors.transparent)
+              ),child: const Center(child: Text("Sa"))),
+        ),
+        ],
+      )
+    );
 
     monthRows.add(Row(
       children: currentRow,
@@ -219,11 +312,35 @@ class _SquareItemState extends State<SquareItem> {
         width: 45.0,
         height: 45.0,
         child: Center(
-            child: Text(widget.percentage[0].toString() + ":" + widget.percentage[1].toString(), style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              color: textColor
-            ),)
+            child:  GridView.builder(
+              itemCount: widget.data['tasks'].length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
+              itemBuilder: (context, index) {
+                if(widget.data['tasks'][index][0] == 0){
+                  return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(2),
+                        color: Color.fromARGB(200, 34, 34, 34),
+                        border: Border.all(color: Colors.grey)
+                    ),
+                    margin: EdgeInsets.all(1.0),
+                  );
+                }
+                return Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: widget.taskList.firstWhere(
+                            (element) => element['index'] == widget.data['tasks'][index][1],
+                        orElse: null,
+                      )['color'],
+                      border: Border.all(color: Colors.grey)
+                  ),
+                  margin: EdgeInsets.all(1.0),
+                );
+              },
+            ),
         ),
       )
     )

@@ -245,7 +245,8 @@ class _HomePageState extends State<HomePage> {
       case 0:
         DateTime now = DateTime.now();
         currentWidget = Scaffold(
-          appBar: AppBar(title: Text("Squares")),
+          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"), toolbarHeight: 20.0,
+            leading: _isJournal? Icon(Icons.chrome_reader_mode) : Icon(Icons.dataset_outlined)),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
               : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback),
           floatingActionButton:  Switch(
@@ -287,19 +288,19 @@ class _HomePageState extends State<HomePage> {
         ),
         items: [
           BottomNavigationBarItem(
-              icon:  _isJournal? Icon(Icons.chrome_reader_mode, color: Colors.white) :
-                                 Icon(Icons.dataset_outlined, color: Colors.white),
+              icon:  _isJournal? const Icon(Icons.chrome_reader_mode, color: Colors.white) :
+                                 const Icon(Icons.dataset_outlined, color: Colors.white),
               label: _isJournal? "Journal": "Squares"
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
               icon:  Icon(Icons.auto_awesome_outlined, color: Colors.white),
               label: "Habits"
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
               icon:  Icon(Icons.bar_chart_outlined, color: Colors.white),
               label: "Statistics"
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
               icon:  Icon(Icons.blender_outlined, color: Colors.white),
               label: "Blender!!"
           ),
