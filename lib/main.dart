@@ -173,8 +173,8 @@ class _HomePageState extends State<HomePage> {
            'tasks': taskList,
          });
        }
-       if(squareData.last['date'].difference(DateTime.now()).inDays > 0){
-           squareData.addAll(fillMissingSquares(squareData.last['date']));
+       if(DateTime.now().difference(squareData.last['date']).inDays > 0){
+           squareData.addAll(fillMissingSquares(squareData.last['date'].add(Duration(days: 1))));
        }
       }
 
