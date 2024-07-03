@@ -235,24 +235,38 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+  bool _isJournal = false;
+
 
   @override
   Widget build(BuildContext context) {
     Widget currentWidget;
-
     switch (_pageIndex) {
       case 0:
         DateTime now = DateTime.now();
-        currentWidget = Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback); // Replace with your widget for index 0
+        currentWidget = Scaffold(
+          appBar: AppBar(title: Text("Squares")),
+          body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
+              : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback),
+          floatingActionButton:  Switch(
+            activeColor: Colors.white,
+            value: _isJournal,
+            onChanged: (value) {
+              setState(() {
+                _isJournal = value;
+              });
+            },
+          ),
+        );
         break;
       case 1:
         currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback,);
         break;
       case 2:
-        currentWidget = Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback);
+        currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       case 3:
-        currentWidget = Statistics(taskList: tasks, squareData: squareData);
+        currentWidget = Text("to be implemented");
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
@@ -271,22 +285,23 @@ class _HomePageState extends State<HomePage> {
         selectedIconTheme: const IconThemeData(
           color: Colors.yellow,
         ),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-              icon:  Icon(Icons.auto_awesome_motion_outlined, color: Colors.white),
-              label: "Squares"
+              icon:  _isJournal? Icon(Icons.chrome_reader_mode, color: Colors.white) :
+                                 Icon(Icons.dataset_outlined, color: Colors.white),
+              label: _isJournal? "Journal": "Squares"
           ),
           BottomNavigationBarItem(
               icon:  Icon(Icons.auto_awesome_outlined, color: Colors.white),
               label: "Habits"
           ),
           BottomNavigationBarItem(
-              icon:  Icon(Icons.auto_awesome_mosaic_outlined, color: Colors.white),
-              label: "Journal"
+              icon:  Icon(Icons.bar_chart_outlined, color: Colors.white),
+              label: "Statistics"
           ),
           BottomNavigationBarItem(
-              icon:  Icon(Icons.analytics_rounded, color: Colors.white),
-              label: "Statistics"
+              icon:  Icon(Icons.blender_outlined, color: Colors.white),
+              label: "Blender!!"
           ),
         ],
       ),

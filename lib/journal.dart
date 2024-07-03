@@ -190,7 +190,6 @@ class _JournalItemState extends State<JournalItem> {
       MaterialPageRoute(
         builder: (context) => EditJournal(
           pathString: filePath,
-          setFileExistsCallback: setFileExistsCallback,
         ),
       ),
     );
@@ -211,13 +210,7 @@ class _JournalItemState extends State<JournalItem> {
   }
 
   String filePath = "";
-  bool fileExists = false;
-
-  void setFileExistsCallback(bool exists){
-    setState(() {
-      fileExists = exists;
-    });
-  }
+  bool fileExists = true;
 
   void _setFilePath() async {
     final basePath = await _localPath;
@@ -228,6 +221,11 @@ class _JournalItemState extends State<JournalItem> {
     if(await openedFile.exists()){
       setState(() {
         fileExists = true;
+      });
+    }
+    else {
+      setState(() {
+        fileExists = false;
       });
     }
   }
@@ -285,9 +283,8 @@ ScrollController _scroll_controller = ScrollController();
 
 class EditJournal extends StatefulWidget {
   final String pathString;
-  final Function(bool) setFileExistsCallback;
 
-  EditJournal({super.key, required this.pathString, required this.setFileExistsCallback});
+  EditJournal({super.key, required this.pathString});
 
   @override
   _EditJournalState createState() => _EditJournalState();
@@ -331,7 +328,6 @@ class _EditJournalState extends State<EditJournal> {
                         curve: Curves.fastOutSlowIn,
                       );
                     }
-                    widget.setFileExistsCallback(true);
                   });
                 },
                 decoration: InputDecoration(
@@ -389,12 +385,6 @@ class _EditJournalState extends State<EditJournal> {
     final basePath = await _localPath;
     File file = File('$basePath/${widget.pathString}');
     await file.writeAsString(_markdownText);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File saved successfully', style: TextStyle(color: Colors.white),),
-        backgroundColor: Color.fromARGB(200, 34, 34, 34)
-      ),
-    );
   }
   @override
   void dispose() {

@@ -211,7 +211,7 @@ class LineChartState extends State<_LineChart>{
         lineBarsData: lineBarsData1,
         minX: 0,
         maxX: widget.monthData.length.toDouble(),
-        maxY: 4,
+        maxY: 1,
         minY: 0,
       );
 
@@ -292,22 +292,26 @@ class LineChartState extends State<_LineChart>{
       fontSize: 14,
     );
     String text;
-    switch (value.toInt()) {
+    /*
+    switch ((value * 10).toInt()) {
       case 0:
         text = '0%';
         break;
-      case 1:
+      case 5:
         text = "50%";
         break;
-      case 2:
+      case 7:
         text = '75%';
         break;
-      case 3:
+      case 10:
         text = '100%';
         break;
       default:
         return Container();
     }
+    */
+
+     text = (value * 100).toInt().toString() + "%";
 
     return Text(text, style: style, textAlign: TextAlign.center);
   }
@@ -405,15 +409,16 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               const SizedBox(
-                height: 37,
+                height: 40,
               ),
               const SizedBox(
-                height: 37,
+                height: 40,
               ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),
                   child: SizedBox(
+                    height: 100,
                     width: MediaQuery.of(context).size.width,
                     child: _LineChart(monthData: widget.monthData,),
                   )

@@ -12,18 +12,6 @@ class Squares extends StatelessWidget {
   Squares({super.key, required this.squareData, required this.taskList, required this.setTaskCallback, ScrollController? controller})
       : this.controller = controller ?? ScrollController();
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (controller.position.pixels < controller.position.maxScrollExtent) {
-        controller.animateTo(
-          controller.position.maxScrollExtent + 1000,
-          duration: Duration(seconds: 2),
-          curve: Curves.fastOutSlowIn,
-        );
-      }
-    });
-  }
-
   List getPercentage(List<List<int>> taskData){
     int completed = 0;
     for(int i = 0; i < taskData.length; i++){
@@ -115,16 +103,17 @@ class Squares extends StatelessWidget {
     months.add(const Divider(thickness: 30.0, color: Colors.transparent,));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
+      if (controller.position.pixels < controller.position.maxScrollExtent) {
+        controller.animateTo(
+          controller.position.maxScrollExtent + 1000,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn,
+        );
+      }
     });
 
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.small(
-          onPressed: _scrollToBottom,
-          child: Icon(Icons.arrow_downward, color: Colors.white),
-          backgroundColor: Colors.transparent,
-        ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child:  SingleChildScrollView(
@@ -194,8 +183,6 @@ class _SquareItemState extends State<SquareItem> {
     }
     return result;
   }
-
-  //List<Map<String, dynamic>> parseTasksDetailed(List<List<int>> taskData, List<Map<String, dynamic>> taskList){}
 
   @override
   Widget build(BuildContext context) {
