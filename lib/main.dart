@@ -7,6 +7,7 @@ import 'list.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:squared_away/options.dart';
 
 void main() {
   runApp(const SquaredAway());
@@ -138,16 +139,6 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic> allData = await _readData();
     setState(() {
       if (allData['tasks'] == null) {
-        /*
-        tasks  = List.generate(5, (index) {
-          return {
-            'name': 'Example Task',
-            'index': index,
-            'hidden': false,
-            'color': Colors.indigo
-          };
-        });
-         */
         tasks = [
           {
             'name': 'Workout',
@@ -301,7 +292,7 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       case 3:
-        currentWidget = Text("to be implemented");
+        currentWidget = Options();
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index

@@ -413,8 +413,6 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),
                   child: SizedBox(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
                     child: _LineChart(monthData: widget.monthData,),
                   )
                 ),

@@ -301,7 +301,7 @@ class _JournalItemState extends State<JournalItem> {
     });
     File openedFile = File(basePath + '/' +  filePath);
     print(filePath);
-    bool doesExist = await openedFile.exists() && await openedFile.readAsString() != "";
+    bool doesExist = await openedFile.exists();
     print(doesExist);
     setState(() {
       fileExists = doesExist;
@@ -461,10 +461,10 @@ class _EditJournalState extends State<EditJournal> {
   }
 
   Future<void> _saveMarkdownFile() async {
-    final basePath = await _localPath;
-    File file = File('$basePath/${widget.pathString}');
-    await file.writeAsString(_markdownText);
     if(_markdownText != ""){
+      final basePath = await _localPath;
+      File file = File('$basePath/${widget.pathString}');
+      await file.writeAsString(_markdownText);
       widget.setFileExists(true);
     } else{
       widget.setFileExists(false);
