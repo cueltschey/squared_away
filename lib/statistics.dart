@@ -80,6 +80,7 @@ class _StatisticsState extends State<Statistics> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(30.0),
+        child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Padding(
@@ -171,18 +172,10 @@ class _StatisticsState extends State<Statistics> {
           ],
         ),
       ),
+      )
     );
   }
 }
-
-
-
-
-
-
-
-
-
 
 class _LineChart extends StatefulWidget {
   final monthData;
@@ -291,27 +284,7 @@ class LineChartState extends State<_LineChart>{
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
-    /*
-    switch ((value * 10).toInt()) {
-      case 0:
-        text = '0%';
-        break;
-      case 5:
-        text = "50%";
-        break;
-      case 7:
-        text = '75%';
-        break;
-      case 10:
-        text = '100%';
-        break;
-      default:
-        return Container();
-    }
-    */
-
-     text = (value * 100).toInt().toString() + "%";
+    String text = (value * 100).toInt().toString() + "%";
 
     return Text(text, style: style, textAlign: TextAlign.center);
   }
@@ -408,7 +381,7 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 30,),
+              //SizedBox(height: 30,),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, left: 6),

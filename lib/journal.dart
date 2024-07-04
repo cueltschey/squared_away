@@ -300,9 +300,7 @@ class _JournalItemState extends State<JournalItem> {
       filePath = widget.data['date'].year.toString() + "-" + widget.data['date'].month.toString() + "-" + widget.data['date'].day.toString() + ".md";
     });
     File openedFile = File(basePath + '/' +  filePath);
-    print(filePath);
     bool doesExist = await openedFile.exists();
-    print(doesExist);
     setState(() {
       fileExists = doesExist;
     });
