@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/local.sqr');
+    File newFile = File('$path/testb.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -91,16 +91,18 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  List<List<int>> getTasksPairs(List<Map<String, dynamic>> tasks){
+  List<List<int>> getTasksPairs(List<Map<String, dynamic>> tasks, DateTime currentDate){
     List<List<int>> result = [];
     for(Map<String, dynamic> item in tasks){
       if(item["hidden"]){
         continue;
       }
-      List<int> pair = [];
-      pair.add(0);
-      pair.add(item['index']);
-      result.add(pair);
+      if(item['days'][DateFormat("EEEE").format(currentDate).toLowerCase()]){
+        List<int> pair = [];
+        pair.add(0);
+        pair.add(item['index']);
+        result.add(pair);
+      }
     }
     return result;
   }
@@ -115,7 +117,7 @@ class _HomePageState extends State<HomePage> {
         'date': date,
         'month': DateFormat("MMMM").format(DateTime(date.year, date.month)),
         'isMonth': date.day == 1,
-        'tasks': getTasksPairs(tasks),
+        'tasks': getTasksPairs(tasks, date),
       });
     }
     return result;
@@ -144,31 +146,76 @@ class _HomePageState extends State<HomePage> {
             'name': 'Workout',
             'index': 0,
             'hidden': false,
-            'color': Colors.pink
+            'color': Colors.pink,
+            'days': {
+              'sunday': true,
+              'monday': true,
+              'tuesday': true,
+              'wednesday': true,
+              'thursday': true,
+              'friday': true,
+              'saturday': true,
+            },
           },
           {
             'name': 'Read',
             'index': 1,
             'hidden': false,
-            'color': Colors.brown
+            'color': Colors.brown,
+            'days': {
+              'sunday': true,
+              'monday': true,
+              'tuesday': true,
+              'wednesday': true,
+              'thursday': true,
+              'friday': true,
+              'saturday': true,
+            },
           },
           {
             'name': 'Study',
             'index': 2,
             'hidden': false,
-            'color': Colors.green
+            'color': Colors.green,
+            'days': {
+              'sunday': true,
+              'monday': true,
+              'tuesday': true,
+              'wednesday': true,
+              'thursday': true,
+              'friday': true,
+              'saturday': true,
+            },
           },
           {
             'name': 'Clean',
             'index': 3,
             'hidden': false,
-            'color': Colors.blue
+            'color': Colors.blue,
+            'days': {
+              'sunday': true,
+              'monday': true,
+              'tuesday': true,
+              'wednesday': true,
+              'thursday': true,
+              'friday': true,
+              'saturday': true,
+            },
           },
           {
             'name': 'Create',
             'index': 4,
             'hidden': false,
-            'color': Colors.yellow
+            'color': Colors.yellow,
+            'days': {
+              'sunday': true,
+              'monday': false,
+              'tuesday': false,
+              'wednesday': false,
+              'thursday': false,
+              'friday': false,
+              'saturday': true,
+            },
           },
         ];
       }
@@ -179,10 +226,11 @@ class _HomePageState extends State<HomePage> {
             'index': allData['tasks'][i]['index'],
             'hidden': allData['tasks'][i]['hidden'],
             'color': Color(allData['tasks'][i]['color']),
+            'days': allData['tasks'][i]['days'],
           });
         }
       }
-      if(allData['squareData'] == null){
+      if(allData['squareData'] == null || allData['squareData'] == []){
         squareData = fillMissingSquares(DateTime(DateTime.now().year, DateTime.now().month - 1));
       }
       else {
@@ -226,15 +274,29 @@ class _HomePageState extends State<HomePage> {
     writeTaskList(tasks, squareData);
   }
 
-  void addTaskCallback(String taskName, Color newColor){
+  void addTaskCallback(String taskName, Color newColor, List<bool> checkedDays){
+    if(taskName == ""){
+      return;
+    }
     setState(() {
-      squareData.last['tasks'].add([0,tasks.length]);
       tasks.add({
         'name':  taskName,
         'index': tasks.length,
         'hidden': false,
-        'color': newColor
+        'color': newColor,
+        'days': {
+          'sunday': checkedDays[0],
+          'monday': checkedDays[1],
+          'tuesday': checkedDays[2],
+          'wednesday': checkedDays[3],
+          'thursday': checkedDays[4],
+          'friday': checkedDays[5],
+          'saturday': checkedDays[6],
+        }
       });
+      if(tasks.last['days'][DateFormat("EEEE").format(DateTime.now()).toLowerCase()]){
+        squareData.last['tasks'].add([0,tasks.length - 1]);
+      }
     });
     writeTaskList(tasks, squareData);
   }

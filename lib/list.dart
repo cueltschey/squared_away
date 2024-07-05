@@ -4,7 +4,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 class TaskList extends StatefulWidget {
   TaskList({super.key, required this.taskList, required this.addNewTask, required this.deleteTaskCallback});
   final List<Map<String, dynamic>> taskList;
-  final Function(String, Color) addNewTask;
+  final Function(String, Color, List<bool>) addNewTask;
   final Function(int) deleteTaskCallback;
 
   @override
@@ -12,50 +12,18 @@ class TaskList extends StatefulWidget {
 }
 
 class _TaskListState extends State<TaskList> {
-  TextEditingController _controller = TextEditingController(); // Controller for TextField
-
-  void addTask(String newTask) {
-    setState(() {
-      widget.addNewTask(newTask, _selectedColor); // Add new task with the selected option index
-      _controller.clear(); // Clear the text field after adding task
-    });
-  }
 
   void _editTask(int taskIndex){}
   void _deleteTask(int taskIndex){
     widget.deleteTaskCallback(taskIndex);
   }
 
-  Color _selectedColor = Colors.blue; // Default selected color
-
-  void _pickColor(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: _selectedColor,
-              enableAlpha: false,
-              onColorChanged: (color) {
-                setState(() {
-                  _selectedColor = color;
-                });
-              },
-              showLabel: true,
-              pickerAreaHeightPercent: 0.8,
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('Done'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  void _openPopup() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTask(addNewTask: widget.addNewTask)
+      ),
     );
   }
 
@@ -107,51 +75,131 @@ class _TaskListState extends State<TaskList> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                Column(
-                  children: [
+          ElevatedButton(
+              onPressed: _openPopup,
+            child: Icon(Icons.add),
+              )
+        ],
+      ),
+    );
+  }
+}
 
-                  ],
+class AddTask extends StatefulWidget{
+  final Function(String, Color, List<bool>) addNewTask;
+  AddTask({super.key, required this.addNewTask});
+  _AddTaskState createState() => _AddTaskState();
+}
+
+class _AddTaskState extends State<AddTask> {
+  Color _selectedColor = Colors.blue;
+  TextEditingController _controller = TextEditingController();
+  List<bool> _isChecked = [true, true, true, true, true, true, true];
+  List<String> _days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+  void addTask(String newTask, List<bool> checkedDays) {
+    setState(() {
+      widget.addNewTask(newTask, _selectedColor, checkedDays); // Add new task with the selected option index
+      _controller.clear(); // Clear the text field after adding task
+    });
+  }
+
+  void _pickColor(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: _selectedColor,
+              enableAlpha: false,
+              onColorChanged: (color) {
+                setState(() {
+                  _selectedColor = color;
+                });
+              },
+              showLabel: true,
+              pickerAreaHeightPercent: 0.8,
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Done'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Add a new task")),
+      body: Column(
+        children: [
+          Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'Enter a new habit',
                 ),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: 'Enter a new habit',
+                autocorrect: false,
+                maxLength: 30,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () => _pickColor(context),
+                    child: Icon(
+                      Icons.circle,
+                      color: _selectedColor,
                     ),
-                    autocorrect: false,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () => _pickColor(context),
-                        child: Icon(
-                          Icons.circle,
-                          color: _selectedColor,
+                ],
+              ),
+            ),
+        ]),
+          Divider(thickness: 10.0, color: Colors.transparent),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List<Widget>.generate(_days.length, (int index) {
+                return Row(
+                  children: <Widget>[
+                    Column(
+                      children: [
+                        Text(_days[index]),
+                        Checkbox(
+                          value: _isChecked[index],
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isChecked[index] = value!;
+                            });
+                          },
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_controller.text.isNotEmpty) {
-                      addTask(_controller.text); // Add the text from TextField as a new task
-                    }
-                  },
-                  child: Icon(Icons.add),
-                ),
-              ],
+                      ],
+                    )
+                  ],
+                );
+              }),
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.check, color: Colors.green), onPressed: () {
+        addTask(_controller.text, _isChecked);
+        Navigator.pop(context);
+      },
+        backgroundColor: Colors.transparent,
       ),
     );
   }
