@@ -398,30 +398,80 @@ class _EditSquareState extends State<EditSquare> {
               widget.data['date'].year.toString(),
         ),
       ),
-      body: ListView.builder(
-        itemCount: widget.data['tasks'].length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(
-              widget.taskList.firstWhere(
-                  (element) => element['index'] == widget.data['tasks'][index][1],
-                  orElse: null,
-              )['name'],
-              style: TextStyle(
-                  color: widget.taskList.firstWhere(
-                      (element) => element['index'] == widget.data['tasks'][index][1],
-                      orElse: null,
-                  )['color']
+      body: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(150, 34, 34, 34),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: Color.fromARGB(200, 34, 34, 34),
+                width: 4.0,
               ),
             ),
-            trailing: Checkbox(
-              value: _isCheckedList[index],
-              onChanged: (bool? isChecked) {
-                _handleCheckboxChange(index, isChecked!);
+            height: 100.0,
+            width: 100.0,
+            padding: EdgeInsets.all(2.0),
+            child: Center(
+              child:  GridView.builder(
+                itemCount: widget.data['tasks'].length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
+                itemBuilder: (context, index) {
+                  if(widget.data['tasks'][index][0] == 0){
+                    return Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: Color.fromARGB(200, 34, 34, 34),
+                          border: Border.all(color: Colors.grey)
+                      ),
+                      margin: EdgeInsets.all(1.0),
+                    );
+                  }
+                  return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(2),
+                        color: widget.taskList.firstWhere(
+                              (element) => element['index'] == widget.data['tasks'][index][1],
+                          orElse: null,
+                        )['color'],
+                        border: Border.all(color: Colors.grey)
+                    ),
+                    margin: EdgeInsets.all(1.0),
+                  );
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.data['tasks'].length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    widget.taskList.firstWhere(
+                          (element) => element['index'] == widget.data['tasks'][index][1],
+                      orElse: () => {'name': 'Unknown', 'color': Colors.black},
+                    )['name'],
+                    style: TextStyle(
+                      color: widget.taskList.firstWhere(
+                            (element) => element['index'] == widget.data['tasks'][index][1],
+                        orElse: () => {'name': 'Unknown', 'color': Colors.black},
+                      )['color'],
+                    ),
+                  ),
+                  trailing: Checkbox(
+                    value: _isCheckedList[index],
+                    onChanged: (bool? isChecked) {
+                      _handleCheckboxChange(index, isChecked!);
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

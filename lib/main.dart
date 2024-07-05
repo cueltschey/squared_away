@@ -378,8 +378,7 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       case 3:
-        //currentWidget = Options();
-        currentWidget = Text(tasks.last.toString());
+        currentWidget = Options();
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
