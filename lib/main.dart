@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/testb.sqr');
+    File newFile = File('$path/testd.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -300,6 +300,30 @@ class _HomePageState extends State<HomePage> {
     });
     writeTaskList(tasks, squareData);
   }
+
+  void updateTaskCallback(String taskName, Color newColor, List<bool> checkedDays, int taskIndex){
+    if(taskName == ""){
+      return;
+    }
+    setState(() {
+      tasks[taskIndex] = {
+        'name':  taskName,
+        'index': taskIndex,
+        'hidden': false,
+        'color': newColor,
+        'days': {
+          'sunday': checkedDays[0],
+          'monday': checkedDays[1],
+          'tuesday': checkedDays[2],
+          'wednesday': checkedDays[3],
+          'thursday': checkedDays[4],
+          'friday': checkedDays[5],
+          'saturday': checkedDays[6],
+        }
+      };
+    });
+    writeTaskList(tasks, squareData);
+  }
   
   removeTaskCallback(int index){
     setState(() {
@@ -348,13 +372,14 @@ class _HomePageState extends State<HomePage> {
         );
         break;
       case 1:
-        currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback,);
+        currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback, updateTask: updateTaskCallback,);
         break;
       case 2:
         currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       case 3:
-        currentWidget = Options();
+        //currentWidget = Options();
+        currentWidget = Text(tasks.last.toString());
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
