@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart' as pc;
 import 'package:fl_chart/fl_chart.dart';
@@ -35,13 +36,32 @@ class _StatisticsState extends State<Statistics> {
   List<String> _items = ["this week", "this month", "this year", "forever"];
   int _selectedIndex = 0;
   String _selectedItem = "";
+  List<Map<String, double>> _taskCompletionList = [];
 
   @override
   void initState() {
     super.initState();
+    monthData = getDataFromDateOffset(widget.squareData, 31);
+    _taskCompletionList = List.generate(widget.taskList.length, (index) => {
+      "completed": 0,
+      "uncompleted": 0,
+    });
+    for(int i = 0; i < monthData.length; i++){
+      for(int j = 0; j < monthData[i]['tasks'].length; j++){
+        if(monthData[i]['tasks'][j][0] == 1){
+          _taskCompletionList[monthData[i]['tasks'][j][1]]['completed'] =
+              (_taskCompletionList[monthData[i]['tasks'][j][1]]['completed'] ?? 0) + 1;
+        } else{
+          _taskCompletionList[monthData[i]['tasks'][j][1]]['uncompleted'] =
+              (_taskCompletionList[monthData[i]['tasks'][j][1]]['uncompleted'] ?? 0) + 1;
+        }
+      }
+    }
+
+
+
     _selectedIndex = 1;
     _selectedItem = _items[1];
-    monthData = getDataFromDateOffset(widget.squareData, 31);
     dataMap = {
       "100%": 0,
       "75%": 0,
@@ -160,6 +180,22 @@ class _StatisticsState extends State<Statistics> {
                       dataMap['0%'] = (dataMap['0%'] ?? 0) + 1;
                     }
                   }
+
+                  _taskCompletionList = List.generate(widget.taskList.length, (index) => {
+                    "completed": 0,
+                    "uncompleted": 0,
+                  });
+                  for(int i = 0; i < monthData.length; i++){
+                    for(int j = 0; j < monthData[i]['tasks'].length; j++){
+                      if(monthData[i]['tasks'][j][0] == 1){
+                        _taskCompletionList[monthData[i]['tasks'][j][1]]['completed'] =
+                            (_taskCompletionList[monthData[i]['tasks'][j][1]]['completed'] ?? 0) + 1;
+                      } else{
+                        _taskCompletionList[monthData[i]['tasks'][j][1]]['uncompleted'] =
+                            (_taskCompletionList[monthData[i]['tasks'][j][1]]['uncompleted'] ?? 0) + 1;
+                      }
+                    }
+                  }
                 });
               },
               items: _items.map<DropdownMenuItem<String>>((String value) {
@@ -169,6 +205,36 @@ class _StatisticsState extends State<Statistics> {
                 );
               }).toList(),
             ),
+            Container( height: 300.0, child: ListView.builder(
+              itemCount: widget.taskList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    widget.taskList[index]['name'],
+                    style: TextStyle(color: widget.taskList[index]['color'])
+                  ),
+                  trailing: Container(
+                    height: 50.0,
+                    width: 50.0,
+                    child: pc.PieChart(
+                      dataMap: _taskCompletionList[index],
+                      colorList: const [
+                        Colors.green,
+                        Color.fromARGB(200, 34, 34, 34)
+                      ],
+                      chartType: pc.ChartType.ring,
+                      legendOptions: const pc.LegendOptions(
+                        showLegends: false,
+                      ),
+                      chartValuesOptions: const pc.ChartValuesOptions(
+                        showChartValues: false,
+                      ),
+                      ringStrokeWidth: 3.0,
+                    )
+                  )
+                );
+              },
+            ),)
           ],
         ),
       ),
