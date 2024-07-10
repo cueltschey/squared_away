@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -315,7 +315,7 @@ class _SquareItemState extends State<SquareItem> {
             child:  GridView.builder(
               itemCount: widget.data['tasks'].length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: sqrt(widget.data['tasks'].length).ceil(),
               ),
               itemBuilder: (context, index) {
                 if(widget.data['tasks'][index][0] == 0){
@@ -416,7 +416,7 @@ class _EditSquareState extends State<EditSquare> {
               child:  GridView.builder(
                 itemCount: widget.data['tasks'].length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: sqrt(widget.data['tasks'].length).ceil(),
                 ),
                 itemBuilder: (context, index) {
                   if(widget.data['tasks'][index][0] == 0){

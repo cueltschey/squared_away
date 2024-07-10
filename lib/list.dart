@@ -46,12 +46,22 @@ class _TaskListState extends State<TaskList> {
         children: <Widget>[
           Expanded(
             child: ListView.builder(
+              padding: EdgeInsets.all(2),
               itemCount: widget.taskList.length,
               itemBuilder: (context, index) {
                 if(widget.taskList[index]['hidden']){
                   return Container();
                 }
-                return ListTile(
+                return Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: widget.taskList[index]['color'],
+                      width: 2.0
+                    ),
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                    child: ListTile(
                   title: Text(widget.taskList[index]['name'], style: TextStyle(
                     color: widget.taskList[index]['color'],
                     fontSize: 20.0,
@@ -80,13 +90,14 @@ class _TaskListState extends State<TaskList> {
                       ),
                     ],
                   ),
+                )
                 );
               },
             ),
           ),
           ElevatedButton(
               onPressed: _openAddTask,
-            child: Icon(Icons.add),
+              child: Icon(Icons.add, color: Colors.green),
               )
         ],
       ),

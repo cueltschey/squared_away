@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/testd.sqr');
+    File newFile = File('$path/testf.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -72,6 +72,7 @@ class _HomePageState extends State<HomePage> {
               "index": task['index'],
               "hidden": task['hidden'],
               "color": task['color'].value,
+              "days": task['days']
             };
           }
       ).toList(),
@@ -125,6 +126,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> tasks = [];
   List<Map<String, dynamic>> squareData = [];
+  bool _loading = true;
 
   Future<Map<String, dynamic>> _readData() async {
     try{
@@ -250,13 +252,16 @@ class _HomePageState extends State<HomePage> {
            squareData.addAll(fillMissingSquares(squareData.last['date'].add(Duration(days: 1))));
        }
       }
-
+      setState(() {
+        _loading = false;
+      });
     });
   }
 
   @override
   void initState() {
     super.initState();
+    _loading = true;
     getData();
   }
 
@@ -378,7 +383,8 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Statistics(taskList: tasks, squareData: squareData);
         break;
       case 3:
-        currentWidget = Options();
+        //currentWidget = Options();
+        currentWidget = Text(tasks[1].toString());
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
@@ -386,7 +392,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: Center(
-        child: currentWidget,
+        child: _loading? CircularProgressIndicator() : currentWidget,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,

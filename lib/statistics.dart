@@ -257,7 +257,7 @@ class LineChartState extends State<_LineChart>{
   Widget build(BuildContext context) {
     return LineChart(
       sampleData1,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 800),
     );
   }
 
@@ -372,7 +372,7 @@ class LineChartState extends State<_LineChart>{
         show: true,
         border: Border(
           bottom:
-          BorderSide(color: Colors.blue, width: 4),
+          BorderSide(color: Colors.white, width: 1),
           left: const BorderSide(color: Colors.transparent),
           right: const BorderSide(color: Colors.transparent),
           top: const BorderSide(color: Colors.transparent),
@@ -410,17 +410,8 @@ class LineChartState extends State<_LineChart>{
   LineChartBarData get lineChartBarData1_1 =>
       LineChartBarData(
         isCurved: true,
-        gradient: const LinearGradient(
-          colors: [
-            Colors.deepPurple,
-            Colors.blue,
-            Colors.green,
-            Colors.yellow,
-            Colors.orange,
-            Colors.red,
-          ]
-        ),
-        barWidth: 4,
+        barWidth: 2,
+        gradient: const LinearGradient(colors: [Colors.green, Colors.blueAccent]),
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
@@ -441,7 +432,7 @@ class StatisticsLineChartState extends State<StatisticsLineChart> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.23,
+      aspectRatio: 3,
       child: Stack(
         children: <Widget>[
           Column(
