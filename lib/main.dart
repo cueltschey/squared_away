@@ -8,9 +8,18 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:squared_away/options.dart';
+import 'package:provider/provider.dart';
+import 'theme.dart';
 
 void main() {
-  runApp(const SquaredAway());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(
+        ThemeData.light(),
+      ),
+      child: const SquaredAway(),
+    ),
+  );
 }
 
 class SquaredAway extends StatelessWidget {
@@ -19,17 +28,14 @@ class SquaredAway extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Squared Away',
-      home: const HomePage(title: 'Squared Away'),
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.green[800],
-        colorScheme: const ColorScheme.dark(
-        primary: Colors.blue,
-        secondary: Colors.blueAccent,
-      ),
-    )
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Squared Away',
+          theme: themeProvider.themeData,
+          home: HomePage(title: "Squared Away"),
+        );
+      },
     );
   }
 }
@@ -44,6 +50,44 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final List<Map<String, dynamic>> themes = [
+    {
+      'name': 'Basic Dark',
+      'primary': Color.fromARGB(200, 34, 34, 34),
+      'focus': Color.fromARGB(255, 200, 200, 200),
+      'isDark': true,
+    },
+    {
+      'name': 'Basic Light',
+      'primary': Color.fromARGB(255, 150, 150, 150),
+      'focus': Color.fromARGB(255, 34, 34, 34),
+      'isDark': false,
+    },
+    {
+      'name': 'Martian Dark',
+      'primary': Color.fromARGB(200, 34, 34, 34),
+      'focus': Color.fromARGB(255, 200, 255, 255),
+      'isDark': true,
+    },
+    {
+      'name': 'Martian Light',
+      'primary': Color.fromARGB(255, 200, 255, 255),
+      'focus': Color.fromARGB(255, 34, 34, 34),
+      'isDark': false,
+    },
+    {
+      'name': 'Fire Dark',
+      'primary': Color.fromARGB(200, 34, 34, 34),
+      'focus': Color.fromARGB(255, 235, 150, 150),
+      'isDark': true,
+    },
+    {
+      'name': 'Fire Light',
+      'primary': Color.fromARGB(255, 235, 150, 150),
+      'focus': Color.fromARGB(255, 34, 34, 34),
+      'isDark': false,
+    },
+  ];
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -86,6 +130,7 @@ class _HomePageState extends State<HomePage> {
             };
           }
       ).toList(),
+      "theme": [themeId],
     };
     String jsonTaskList = jsonEncode(allData);
     return file.writeAsString(jsonTaskList);
@@ -127,6 +172,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> tasks = [];
   List<Map<String, dynamic>> squareData = [];
   bool _loading = true;
+  int themeId = 0;
 
   Future<Map<String, dynamic>> _readData() async {
     try{
@@ -252,6 +298,19 @@ class _HomePageState extends State<HomePage> {
            squareData.addAll(fillMissingSquares(squareData.last['date'].add(Duration(days: 1))));
        }
       }
+      if(allData['theme'] != null && allData['theme'].length > 0){
+        setState(() {
+          themeId = allData['theme'][0];
+        });
+
+        Provider.of<ThemeProvider>(context, listen: false).setTheme(
+            ThemeData(
+              brightness: themes[themeId]['isDark']? Brightness.dark : Brightness.light,
+              primaryColor:  themes[themeId]['primary'],
+              focusColor: themes[themeId]['focus'],
+            )
+        );
+      }
       setState(() {
         _loading = false;
       });
@@ -351,6 +410,15 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
+  void setThemeCallback(int Id){
+    setState(() {
+      themeId = Id;
+    });
+    writeTaskList(tasks, squareData);
+  }
+
+
   bool _isJournal = false;
 
 
@@ -361,12 +429,11 @@ class _HomePageState extends State<HomePage> {
       case 0:
         DateTime now = DateTime.now();
         currentWidget = Scaffold(
-          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"), toolbarHeight: 20.0,
-            leading: _isJournal? Icon(Icons.chrome_reader_mode) : Icon(Icons.dataset_outlined)),
+          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"), toolbarHeight: 20.0,),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
               : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback),
           floatingActionButton:  Switch(
-            activeColor: Colors.white,
+            activeColor: Theme.of(context).focusColor,
             value: _isJournal,
             onChanged: (value) {
               setState(() {
@@ -377,14 +444,18 @@ class _HomePageState extends State<HomePage> {
         );
         break;
       case 1:
-        currentWidget = TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback, updateTask: updateTaskCallback,);
-        break;
-      case 2:
-        currentWidget = Statistics(taskList: tasks, squareData: squareData);
-        break;
-      case 3:
-        //currentWidget = Options();
-        currentWidget = Text(tasks[1].toString());
+        currentWidget = Options(
+          options: [
+            TaskList(taskList: tasks, addNewTask: addTaskCallback, deleteTaskCallback: removeTaskCallback, updateTask: updateTaskCallback),
+            Scaffold(
+              appBar:  AppBar(title: Text("Statistics")),
+                body: Statistics(taskList: tasks, squareData: squareData)
+            ),
+            ThemePicker(setThemeCallback: setThemeCallback,)
+          ],
+          icons: [Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",), Icon(Icons.bar_chart_outlined), Icon(Icons.palette)],
+          subtitles: ["Habits", "Statistics", "Theme"],
+        );
         break;
       default:
         currentWidget = const SizedBox.shrink(); // Handle any unexpected index
@@ -397,28 +468,17 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.white,
+        selectedItemColor: Theme.of(context).focusColor,
         elevation: 20.0,
-        backgroundColor: Color.fromARGB(200, 34, 34, 34),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.yellow,
-        ),
+        backgroundColor: Theme.of(context).primaryColor,
         items: [
           BottomNavigationBarItem(
-              icon:  _isJournal? const Icon(Icons.chrome_reader_mode, color: Colors.white) :
-                                 const Icon(Icons.dataset_outlined, color: Colors.white),
-              label: _isJournal? "Journal": "Squares"
+              icon:  _isJournal?  Icon(Icons.chrome_reader_mode, color: Theme.of(context).focusColor) :
+                                  Icon(Icons.dataset_outlined, color: Theme.of(context).focusColor),
+              label: _isJournal? "Journal": "Squares",
           ),
-          const BottomNavigationBarItem(
-              icon:  Icon(Icons.auto_awesome_outlined, color: Colors.white),
-              label: "Habits"
-          ),
-          const BottomNavigationBarItem(
-              icon:  Icon(Icons.bar_chart_outlined, color: Colors.white),
-              label: "Statistics"
-          ),
-          const BottomNavigationBarItem(
-              icon:  Icon(Icons.blender_outlined, color: Colors.white),
+          BottomNavigationBarItem(
+              icon:  Icon(Icons.blender_outlined, color: Theme.of(context).focusColor),
               label: "Blender!!"
           ),
         ],

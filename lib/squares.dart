@@ -302,7 +302,7 @@ class _SquareItemState extends State<SquareItem> {
       padding: EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Color.fromARGB(150, 34, 34, 34),
+            color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(
               color: squareColor,
@@ -322,8 +322,8 @@ class _SquareItemState extends State<SquareItem> {
                   return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(2),
-                        color: Color.fromARGB(200, 34, 34, 34),
-                        border: Border.all(color: Colors.grey)
+                        color: Theme.of(context).primaryColor,
+                        border: Border.all(color: Theme.of(context).focusColor)
                     ),
                     margin: EdgeInsets.all(1.0),
                   );
@@ -402,10 +402,10 @@ class _EditSquareState extends State<EditSquare> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Color.fromARGB(150, 34, 34, 34),
+              color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(
-                color: Color.fromARGB(200, 34, 34, 34),
+                color: Theme.of(context).primaryColor,
                 width: 4.0,
               ),
             ),
@@ -423,8 +423,8 @@ class _EditSquareState extends State<EditSquare> {
                     return Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2),
-                          color: Color.fromARGB(200, 34, 34, 34),
-                          border: Border.all(color: Colors.grey)
+                          color: Theme.of(context).primaryColor,
+                          border: Border.all(color: Theme.of(context).focusColor)
                       ),
                       margin: EdgeInsets.all(1.0),
                     );

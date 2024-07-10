@@ -257,7 +257,7 @@ class LineChartState extends State<_LineChart>{
   Widget build(BuildContext context) {
     return LineChart(
       sampleData1,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 100),
     );
   }
 

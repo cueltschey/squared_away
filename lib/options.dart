@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Options extends StatelessWidget {
-  List<Widget> options = [
-    Text("one"),
-    Text("two")
-  ];
-
-  List<Icon> icons = [
-    Icon(Icons.star, size: 50.0),
-    Icon(Icons.add, size: 50.0),
-  ];
+  final List<Widget> options;
+  final List<Icon> icons;
+  final List<String> subtitles;
+  Options({super.key, required this.options, required this.icons, required this.subtitles});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +23,7 @@ class Options extends StatelessWidget {
               );
             },
             child: Card(
-              child: Center(
-                child: icons[index],
-              ),
+              child: Column(children: [icons[index], SizedBox(height: 2.0,), Text(subtitles[index])]),
             ),
           );
         }),

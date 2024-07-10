@@ -55,6 +55,7 @@ class _TaskListState extends State<TaskList> {
                 return Container(
                   padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
                     border: Border.all(
                       color: widget.taskList[index]['color'],
                       width: 2.0
