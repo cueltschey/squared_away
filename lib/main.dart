@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:squared_away/options.dart';
 import 'package:provider/provider.dart';
 import 'theme.dart';
+//import 'drive.dart';
 
 void main() {
   runApp(
@@ -451,10 +452,17 @@ class _HomePageState extends State<HomePage> {
               appBar:  AppBar(title: Text("Statistics")),
                 body: Statistics(taskList: tasks, squareData: squareData)
             ),
-            ThemePicker(setThemeCallback: setThemeCallback,)
+            ThemePicker(setThemeCallback: setThemeCallback,),
+            //UploadToGoogleDriveWidget()
+            Text("To be implemented")
           ],
-          icons: [Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",), Icon(Icons.bar_chart_outlined), Icon(Icons.palette)],
-          subtitles: ["Habits", "Statistics", "Theme"],
+          icons: [
+            Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
+            Icon(Icons.bar_chart_outlined),
+            Icon(Icons.palette),
+            Icon(Icons.file_copy_outlined)
+          ],
+          subtitles: ["Habits", "Statistics", "Theme", "Sync to Drive"],
         );
         break;
       default:
