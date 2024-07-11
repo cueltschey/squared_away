@@ -10,9 +10,23 @@ import 'package:path_provider/path_provider.dart';
 import 'package:squared_away/options.dart';
 import 'package:provider/provider.dart';
 import 'theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 //import 'drive.dart';
 
-void main() {
+Future<void> _initFirebase() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: "AIzaSyAOMFqIRAbHPlJrbhxGpO_Mz0uj-UlKDb0",
+        appId: "1:700175434084:android:846f50a60fac116bd97a71",
+        messagingSenderId: "700175434084",
+        projectId: "squaredaway"
+    ),
+  );
+}
+
+void main() async {
+  _initFirebase();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(
@@ -454,6 +468,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ThemePicker(setThemeCallback: setThemeCallback,),
             //UploadToGoogleDriveWidget()
+            //DriveSyncPage()
             Text("To be implemented")
           ],
           icons: [
