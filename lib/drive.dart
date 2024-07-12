@@ -130,6 +130,24 @@ class GoogleDrive {
       return folderCreation.id;
     } catch (e) {
       print(e);
+      /*
+      var credentials = await storage.getCredentials();
+      if(credentials == null){
+        print("Failed to get credentials!!");
+        return null;
+      }
+      var newCredentials = await refreshCredentials(
+          ClientId(_clientId, _clientSecret),
+          AccessCredentials(
+            AccessToken(credentials["type"], credentials["data"],
+              DateTime.tryParse(credentials["expiry"])!),
+            credentials["refreshToken"],
+            _scopes),
+          http.Client());
+      var newDrive = ga.DriveApi(authenticatedClient(http.Client(), newCredentials));
+      _getFolderId(newDrive);
+      */
+      await storage.clear();
       return null;
     }
   }
@@ -140,7 +158,7 @@ class GoogleDrive {
     String? folderId = await _getFolderId(drive);
 
     if (folderId == null) {
-      print("SquaredAway folder not found in Google Drive.");
+      print("Invalid Folder");
       return;
     }
 
