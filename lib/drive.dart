@@ -157,19 +157,6 @@ class GoogleDrive {
       // Delete the folder itself
       await drive.files.delete(folderId);
       print("Deleted folder $folderId");
-
-      // Recreate the folder
-      ga.File folder = ga.File();
-      folder.name = "SquaredAway";
-      folder.mimeType = "application/vnd.google-apps.folder";
-      final recreatedFolder = await drive.files.create(folder);
-      String newFolderId = recreatedFolder.id!;
-      print("Recreated folder: $newFolderId");
-
-      // Upload files back into the recreated folder (assuming syncFilesToGoogleDrive handles this)
-      await syncFilesToGoogleDrive();
-      print("Uploaded files to new folder");
-
     } catch (e) {
       print("Error deleting and recreating folder: $e");
     }
@@ -232,6 +219,7 @@ class GoogleDrive {
   Future<void> syncFilesToGoogleDrive() async {
     final Directory documentsDirectory = await getApplicationDocumentsDirectory();
     final List<FileSystemEntity> files = documentsDirectory.listSync();
+    deleteAndRecreateFolder();
 
     for (FileSystemEntity file in files) {
       if (file is File) {

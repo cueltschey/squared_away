@@ -30,7 +30,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(
-        ThemeData.light(),
+        ThemeData.dark(),
       ),
       child: const SquaredAway(),
     ),
