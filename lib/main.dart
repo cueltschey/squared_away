@@ -11,7 +11,7 @@ import 'package:squared_away/options.dart';
 import 'package:provider/provider.dart';
 import 'theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'drive.dart';
+import 'package:squared_away/drive.dart';
 
 Future<void> _initFirebase() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    File newFile = File('$path/testf.sqr');
+    File newFile = File('$path/local.sqr');
     if(await newFile.exists()){
       print("File exists continue...");
     } else {
@@ -201,6 +201,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getData() async {
+    setState(() {
+      tasks = [];
+      squareData = [];
+    });
     Map<String, dynamic> allData = await _readData();
     setState(() {
       if (allData['tasks'] == null) {
@@ -467,9 +471,7 @@ class _HomePageState extends State<HomePage> {
                 body: Statistics(taskList: tasks, squareData: squareData)
             ),
             ThemePicker(setThemeCallback: setThemeCallback,),
-            //UploadToGoogleDriveWidget()
-            //DriveSyncPage()
-            Text("To be implemented")
+            GoogleDriveFileSync(getDataCallback: getData)
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
