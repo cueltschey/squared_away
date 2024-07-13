@@ -87,16 +87,17 @@ class _StatisticsState extends State<Statistics> {
         dataMap['0%'] = (dataMap['0%'] ?? 0) + 1;
       }
     }
-    colorList = [
-      Color.fromARGB(255, 26, 120, 63),
-      Color.fromARGB(230, 54, 106, 94),
-      Color.fromARGB(230, 74, 82, 74),
-      Color.fromARGB(200, 34, 34, 34),
-    ];
   }
 
   @override
   Widget build(BuildContext context) {
+    colorList = [
+      Color.fromARGB(255, 26, 120, 63),
+      Color.fromARGB(230, 54, 106, 94),
+      Color.fromARGB(230, 74, 82, 74),
+      //Color.fromARGB(200, 34, 34, 34),
+      Theme.of(context).primaryColor,
+    ];
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(30.0),
@@ -127,11 +128,11 @@ class _StatisticsState extends State<Statistics> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    chartValuesOptions: const pc.ChartValuesOptions(
+                    chartValuesOptions:  pc.ChartValuesOptions(
                       showChartValueBackground: false,
                       showChartValues: true,
                       showChartValuesInPercentage: false,
-                      chartValueStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                      chartValueStyle: TextStyle(color: Theme.of(context).focusColor, fontWeight: FontWeight.bold)
                     ),
                   ),
                 ],
@@ -218,9 +219,9 @@ class _StatisticsState extends State<Statistics> {
                     width: 50.0,
                     child: pc.PieChart(
                       dataMap: _taskCompletionList[index],
-                      colorList: const [
+                      colorList:  [
                         Colors.green,
-                        Color.fromARGB(200, 34, 34, 34)
+                        Theme.of(context).primaryColor,
                       ],
                       chartType: pc.ChartType.ring,
                       legendOptions: const pc.LegendOptions(

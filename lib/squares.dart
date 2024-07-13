@@ -302,7 +302,7 @@ class _SquareItemState extends State<SquareItem> {
       padding: EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            //color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(
               color: squareColor,
@@ -402,7 +402,7 @@ class _EditSquareState extends State<EditSquare> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              //color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(8.0),
               border: Border.all(
                 color: Theme.of(context).primaryColor,

@@ -336,7 +336,7 @@ class _JournalItemState extends State<JournalItem> {
         padding: EdgeInsets.all(2.0),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(150, 34, 34, 34),
+            //color: const Color.fromARGB(150, 34, 34, 34),
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(
               color: squareColor,

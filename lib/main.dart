@@ -448,7 +448,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         DateTime now = DateTime.now();
         currentWidget = Scaffold(
-          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"), toolbarHeight: 20.0,),
+          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"),),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
               : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback),
           floatingActionButton:  Switch(
