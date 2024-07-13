@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:squared_away/journal.dart';
 import 'package:squared_away/statistics.dart';
+import 'package:squared_away/sundial.dart';
 import 'squares.dart';
 import 'list.dart';
 import 'dart:convert';
@@ -121,9 +122,9 @@ class _HomePageState extends State<HomePage> {
     return newFile;
   }
 
-  Future<File> writeTaskList(List<Map<String, dynamic>> tasks, List<Map<String, dynamic>> squareData) async {
+  Future<File> writeTaskList(List<Map<String, dynamic>> tasks, List<Map<String, dynamic>> squareData, Map<String, dynamic> todayData) async {
     final file = await _localFile;
-    Map<String, List> allData = {
+    Map<String, dynamic> allData = {
       "tasks": tasks.map(
           (Map<String, dynamic> task){
             return {
@@ -146,6 +147,10 @@ class _HomePageState extends State<HomePage> {
           }
       ).toList(),
       "theme": [themeId],
+      "today": {
+        "date": todayData['date'].toString(),
+        "tasks": todayData['tasks'].map((key, value) => MapEntry(key.toString(), value.toString()))
+      },
     };
     String jsonTaskList = jsonEncode(allData);
     return file.writeAsString(jsonTaskList);
@@ -188,6 +193,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> squareData = [];
   bool _loading = true;
   int themeId = 0;
+  Map<String, dynamic> todayData = {};
 
   Future<Map<String, dynamic>> _readData() async {
     try{
@@ -330,6 +336,24 @@ class _HomePageState extends State<HomePage> {
             )
         );
       }
+      print(allData['today']);
+      if(allData['today'] != null && DateTime.parse(allData['today']['date']).difference(DateTime.now()).inDays < 1){
+        // TODO: Fix this nonsense
+        todayData['date'] = allData['today']['date'];
+        // Define the todayData map
+        todayData['tasks'] = {};
+
+        // Parse the tasks from allData and add them to todayData
+        allData['today']['tasks'].forEach((key, value) {
+          int intKey = int.parse(key); // Convert the key to int
+          DateTime dateValue = DateTime.parse(value); // Convert the value to DateTime
+          todayData['tasks'][intKey] = dateValue; // Add the entry to todayData
+        });
+        }
+      else{
+        todayData['date'] = DateTime.now();
+        todayData['tasks'] = {};
+      }
       setState(() {
         _loading = false;
       });
@@ -354,7 +378,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       squareData[squareIndex]['tasks'][taskIndex][0] = value;
     });
-    writeTaskList(tasks, squareData);
+    writeTaskList(tasks, squareData, todayData);
   }
 
   void addTaskCallback(String taskName, Color newColor, List<bool> checkedDays){
@@ -381,7 +405,7 @@ class _HomePageState extends State<HomePage> {
         squareData.last['tasks'].add([0,tasks.length - 1]);
       }
     });
-    writeTaskList(tasks, squareData);
+    writeTaskList(tasks, squareData, todayData);
   }
 
   void updateTaskCallback(String taskName, Color newColor, List<bool> checkedDays, int taskIndex){
@@ -405,7 +429,7 @@ class _HomePageState extends State<HomePage> {
         }
       };
     });
-    writeTaskList(tasks, squareData);
+    writeTaskList(tasks, squareData, todayData);
   }
   
   removeTaskCallback(int index){
@@ -434,7 +458,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       themeId = Id;
     });
-    writeTaskList(tasks, squareData);
+    writeTaskList(tasks, squareData, todayData);
   }
 
 
@@ -450,7 +474,7 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Scaffold(
           appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"),),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
-              : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback),
+              : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback, todayData: todayData,),
           floatingActionButton:  Switch(
             activeColor: Theme.of(context).focusColor,
             value: _isJournal,
@@ -471,15 +495,19 @@ class _HomePageState extends State<HomePage> {
                 body: Statistics(taskList: tasks, squareData: squareData)
             ),
             ThemePicker(setThemeCallback: setThemeCallback,),
-            GoogleDriveFileSync(getDataCallback: getData)
+            GoogleDriveFileSync(getDataCallback: getData),
+            SunScaffold(taskList: tasks, todayData: todayData,),
+            Text(todayData.toString())
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
             Icon(Icons.bar_chart_outlined),
             Icon(Icons.palette),
-            Icon(Icons.file_copy_outlined)
+            Icon(Icons.file_copy_outlined),
+            Icon(Icons.sunny),
+            Icon(Icons.bug_report)
           ],
-          subtitles: ["Habits", "Statistics", "Theme", "Sync to Drive"],
+          subtitles: ["Habits", "Statistics", "Theme", "Sync to Drive", "Sundial", "Debug"],
         );
         break;
       default:

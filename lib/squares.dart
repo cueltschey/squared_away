@@ -8,8 +8,9 @@ class Squares extends StatelessWidget {
   final List<Map<String, dynamic>> taskList;
   final ScrollController controller;
   final Function(int, int, int) setTaskCallback;
+  final Map<String, dynamic> todayData;
 
-  Squares({super.key, required this.squareData, required this.taskList, required this.setTaskCallback, ScrollController? controller})
+  Squares({super.key, required this.squareData, required this.taskList, required this.setTaskCallback, required this.todayData, ScrollController? controller})
       : this.controller = controller ?? ScrollController();
 
   List getPercentage(List<List<int>> taskData){
@@ -124,6 +125,7 @@ class Squares extends StatelessWidget {
       }
       currentRow.add(SquareItem(
           data: squareData[index],
+          todayData: todayData,
           taskList: taskList,
           percentage: getPercentage(squareData[index]['tasks']),
           squareIndex: index,
@@ -225,8 +227,9 @@ class Squares extends StatelessWidget {
 
 class SquareItem extends StatefulWidget {
   SquareItem({super.key, required this.data ,required this.taskList, required this.percentage, required this.squareIndex, required this.setTaskCallback,
-  required this.isHighlighted});
+  required this.isHighlighted, required this.todayData});
 
+  final Map<String, dynamic> todayData;
   final isHighlighted;
   final int squareIndex;
   final Function(int, int, int) setTaskCallback;
@@ -248,6 +251,7 @@ class _SquareItemState extends State<SquareItem> {
       MaterialPageRoute(
         builder: (context) => EditSquare(
             data: widget.data,
+            todayData: widget.todayData,
             taskList: widget.taskList,
             percentage: widget.percentage,
             updateTask: _UpdateCompleted,
@@ -350,9 +354,10 @@ class _SquareItemState extends State<SquareItem> {
 
 
 class EditSquare extends StatefulWidget {
-  EditSquare({super.key, required this.data ,required this.taskList, required this.percentage, required this.updateTask, required this.getCheckList});
+  EditSquare({super.key, required this.data ,required this.taskList, required this.percentage, required this.updateTask, required this.getCheckList, required this.todayData});
 
   final Map<String, dynamic> data;
+  final Map<String, dynamic> todayData;
   final List<Map<String, dynamic>> taskList;
   final List percentage;
   final Function(int, int) updateTask;
@@ -376,6 +381,7 @@ class _EditSquareState extends State<EditSquare> {
       _isCheckedList[index] = isChecked;
       if(isChecked){
         widget.updateTask(index, 1);
+        widget.todayData['tasks'][index] = DateTime.now();
       }
       else{
         widget.updateTask(index, 0);

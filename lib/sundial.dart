@@ -1,0 +1,124 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+import 'dart:async';
+
+class SunPainter extends CustomPainter {
+  final double progress; // 0.0 to 1.0, where 0.0 is sunrise and 1.0 is sunset
+  final List<double> taskProgressArray;
+  final List<Color> taskColorArray;
+
+
+  SunPainter({required this.progress, required this.taskColorArray, required this.taskProgressArray});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    print(progress);
+    Color paintColor = Colors.orange;
+    Color arcColor = Colors.yellow;
+    if(progress > 0.8 || progress < 0.2){
+      paintColor = Colors.grey;
+      arcColor = Color.fromARGB(255, 34, 34, 34);
+    }
+    final Paint paint = Paint()
+      ..color = paintColor
+      ..style = PaintingStyle.fill;
+
+    final Paint arcPaint = Paint()
+      ..color = arcColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+
+    // Draw the arc
+    final Rect arcRect = Rect.fromCircle(
+      center: Offset(size.width / 2, size.height / 1.2),
+      radius: size.width / 2,
+    );
+    canvas.drawArc(arcRect, pi, pi, false, arcPaint);
+
+    for(int i = 0; i < taskProgressArray.length; i++){
+      final double angle = pi * taskProgressArray[i];
+      final double x = size.width / 2 + (size.width / 2) * cos(angle);
+      final double y = size.height / 1.2 + (size.width / 2) * sin(angle) * -1;
+      final Paint taskPaint = Paint()
+        ..color = taskColorArray[i]
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(x, y), 10, taskPaint);
+    }
+
+    // Calculate the sun position
+    final double angle = pi * progress;
+    final double sunX = size.width / 2 + (size.width / 2) * cos(angle);
+    final double sunY = size.height / 1.2 + (size.width / 2) * sin(angle) * -1;
+
+    // Draw the sun
+    canvas.drawCircle(Offset(sunX, sunY), 20, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class SunScaffold extends StatefulWidget {
+  final List<Map<String, dynamic>> taskList;
+  final Map<String, dynamic> todayData;
+  SunScaffold({super.key, required this.taskList, required this.todayData});
+  @override
+  _SunScaffoldState createState() => _SunScaffoldState();
+}
+
+class _SunScaffoldState extends State<SunScaffold> {
+  double _progress = 0.0;
+  List<double> _taskProgressArray = [];
+  List<Color> _taskColorArray = [];
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      widget.todayData['tasks'].forEach((key, value) {
+        _taskColorArray.add(widget.taskList[key]['color']);
+        _taskProgressArray.add(_calculateProgress(value));
+      });
+      _progress = _calculateProgress(DateTime.now());
+    });
+  }
+
+  double _calculateProgress(DateTime now) {
+    final sunrise = DateTime(now.year, now.month, now.day, 0, 0); // 6:00 AM
+    final sunset = DateTime(now.year, now.month, now.day, 23, 0); // 6:00 PM
+    final totalDayDuration = sunset.difference(sunrise).inSeconds;
+    final currentDuration = now.difference(sunrise).inSeconds;
+
+    if (currentDuration <= 0) {
+      return 0.0;
+    } else if (currentDuration >= totalDayDuration) {
+      return 1.0;
+    } else {
+      return currentDuration / totalDayDuration;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sundial'),
+      ),
+      body: Column(
+        children: [
+          Center(
+            child: Padding(
+                child: CustomPaint(
+                  size: Size(MediaQuery.of(context).size.width, 400),
+                  painter: SunPainter(progress: _progress, taskProgressArray: _taskProgressArray, taskColorArray: _taskColorArray),
+                ),
+                padding: EdgeInsets.all(30.0)
+            ),
+          )
+        ],
+      )
+    );
+  }
+}
