@@ -334,7 +334,7 @@ class _HomePageState extends State<HomePage> {
             )
         );
       }
-      if(allData['today'] != null && DateTime.parse(allData['today']['date']).difference(DateTime.now()).inDays < 1){
+      if(allData['today'] != null && DateTime.now().difference(DateTime.parse(allData['today']['date'])).inDays < 1){
         // TODO: Fix this nonsense
         todayData['date'] = allData['today']['date'];
         // Define the todayData map
