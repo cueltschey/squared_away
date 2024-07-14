@@ -52,21 +52,22 @@ class _TaskListState extends State<TaskList> {
                 if(widget.taskList[index]['hidden']){
                   return Container();
                 }
-                return Container(
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                    border: Border.all(
-                      color: widget.taskList[index]['color'],
-                      width: 2.0
-                    ),
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                    child: ListTile(
-                  title: Text(widget.taskList[index]['name'], style: TextStyle(
-                    color: widget.taskList[index]['color'],
-                    fontSize: 20.0,
-                  ),
+                return Padding(
+                      padding: EdgeInsets.all(10.0),
+                        child: Container(
+                decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                border: Border.all(
+                color: widget.taskList[index]['color'],
+                width: 2.0
+                ),
+                borderRadius: BorderRadius.circular(10)
+                ),
+                        child: ListTile(
+                        title: Text(widget.taskList[index]['name'], style: TextStyle(
+                        color: widget.taskList[index]['color'],
+                        fontSize: 20.0,
+                      ),
                   ),
                   trailing: PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: Colors.white),
@@ -92,7 +93,7 @@ class _TaskListState extends State<TaskList> {
                     ],
                   ),
                 )
-                );
+                ));
               },
             ),
           ),

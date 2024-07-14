@@ -23,7 +23,7 @@ class Options extends StatelessWidget {
               );
             },
             child: Card(
-              child: Column(children: [icons[index], SizedBox(height: 2.0,), Text(subtitles[index])]),
+              child: icons[index],
             ),
           );
         }),

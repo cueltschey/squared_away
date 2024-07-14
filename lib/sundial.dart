@@ -12,7 +12,6 @@ class SunPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    print(progress);
     Color paintColor = Colors.orange;
     Color arcColor = Colors.yellow;
     if(progress > 0.8 || progress < 0.2){
@@ -72,6 +71,7 @@ class _SunScaffoldState extends State<SunScaffold> {
   double _progress = 0.0;
   List<double> _taskProgressArray = [];
   List<Color> _taskColorArray = [];
+  List<Map<String, dynamic>> _tasksArray = [];
 
   @override
   void initState() {
@@ -80,7 +80,13 @@ class _SunScaffoldState extends State<SunScaffold> {
       widget.todayData['tasks'].forEach((key, value) {
         _taskColorArray.add(widget.taskList[key]['color']);
         _taskProgressArray.add(_calculateProgress(value));
+        Map<String, dynamic> item = {};
+        item['color'] = widget.taskList[key]['color'];
+        item['text'] = widget.taskList[key]['name'];
+        item['date'] = value;
+        _tasksArray.add(item);
       });
+      print(_tasksArray);
       _progress = _calculateProgress(DateTime.now());
     });
   }
@@ -108,14 +114,32 @@ class _SunScaffoldState extends State<SunScaffold> {
       ),
       body: Column(
         children: [
-          Center(
-            child: Padding(
+          Padding(
                 child: CustomPaint(
                   size: Size(MediaQuery.of(context).size.width, 400),
                   painter: SunPainter(progress: _progress, taskProgressArray: _taskProgressArray, taskColorArray: _taskColorArray),
                 ),
                 padding: EdgeInsets.all(30.0)
             ),
+          Expanded(child:
+          ListView.builder(
+              itemCount: _tasksArray.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                      _tasksArray[index]['text'],
+                    style:  TextStyle(
+                      color: _tasksArray[index]['color'],
+                      fontSize: 20.0
+                    ),
+                  ),
+                  trailing: Text(
+                      _tasksArray[index]['date'].hour.toString() + ':' + _tasksArray[index]['date'].minute.toString(),
+                    style: TextStyle(fontSize: 20.0)
+                  ),
+                );
+              }
+          )
           )
         ],
       )

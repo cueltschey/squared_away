@@ -114,9 +114,7 @@ class _HomePageState extends State<HomePage> {
   Future<File> get _localFile async {
     final path = await _localPath;
     File newFile = File('$path/local.sqr');
-    if(await newFile.exists()){
-      print("File exists continue...");
-    } else {
+    if(!await newFile.exists()){
       newFile.create(recursive: true);
     }
     return newFile;
@@ -336,7 +334,6 @@ class _HomePageState extends State<HomePage> {
             )
         );
       }
-      print(allData['today']);
       if(allData['today'] != null && DateTime.parse(allData['today']['date']).difference(DateTime.now()).inDays < 1){
         // TODO: Fix this nonsense
         todayData['date'] = allData['today']['date'];
