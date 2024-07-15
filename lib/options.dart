@@ -9,11 +9,8 @@ class Options extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Icon Grid'),
-      ),
       body: GridView.count(
-        crossAxisCount: 2,
+        crossAxisCount: 3,
         children: List.generate(options.length, (index) {
           return GestureDetector(
             onTap: () {

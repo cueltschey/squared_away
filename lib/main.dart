@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:squared_away/achievements.dart';
 import 'package:squared_away/journal.dart';
 import 'package:squared_away/statistics.dart';
 import 'package:squared_away/sundial.dart';
@@ -494,6 +495,7 @@ class _HomePageState extends State<HomePage> {
             ThemePicker(setThemeCallback: setThemeCallback,),
             GoogleDriveFileSync(getDataCallback: getData),
             SunScaffold(taskList: tasks, todayData: todayData,),
+            AchievementsPage(squareData: squareData,),
             Text(todayData.toString())
           ],
           icons: [
@@ -502,6 +504,7 @@ class _HomePageState extends State<HomePage> {
             Icon(Icons.palette),
             Icon(Icons.file_copy_outlined),
             Icon(Icons.sunny),
+            Icon(Icons.fireplace),
             Icon(Icons.bug_report)
           ],
           subtitles: ["Habits", "Statistics", "Theme", "Sync to Drive", "Sundial", "Debug"],
