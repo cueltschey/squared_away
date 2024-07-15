@@ -337,7 +337,7 @@ class _HomePageState extends State<HomePage> {
       }
       if(allData['today'] != null && DateTime.now().difference(DateTime.parse(allData['today']['date'])).inDays < 1){
         // TODO: Fix this nonsense
-        todayData['date'] = allData['today']['date'];
+        todayData['date'] = DateTime.parse(allData['today']['date']);
         // Define the todayData map
         todayData['tasks'] = {};
 
@@ -496,7 +496,7 @@ class _HomePageState extends State<HomePage> {
             GoogleDriveFileSync(getDataCallback: getData),
             SunScaffold(taskList: tasks, todayData: todayData,),
             AchievementsPage(squareData: squareData,),
-            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(DateTime.parse(todayData['date'])).inHours.toString())
+            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(todayData['date']).inHours.toString())
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),

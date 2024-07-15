@@ -77,8 +77,9 @@ class GoogleDrive {
     if (credentials == null) {
       //Needs user authentication
       var authClient = await clientViaUserConsent(
-          ClientId(_clientId, _clientSecret), _scopes, (url) {
-          launchUrl(Uri.parse(url));
+          ClientId(_clientId, _clientSecret), _scopes, (url) async {
+          await launchUrl(Uri.parse(url));
+          closeInAppWebView();
       });
       //Save Credentials
       await storage.saveCredentials(authClient.credentials.accessToken,
@@ -130,23 +131,6 @@ class GoogleDrive {
       return folderCreation.id;
     } catch (e) {
       print(e);
-      /*
-      var credentials = await storage.getCredentials();
-      if(credentials == null){
-        print("Failed to get credentials!!");
-        return null;
-      }
-      var newCredentials = await refreshCredentials(
-          ClientId(_clientId, _clientSecret),
-          AccessCredentials(
-            AccessToken(credentials["type"], credentials["data"],
-              DateTime.tryParse(credentials["expiry"])!),
-            credentials["refreshToken"],
-            _scopes),
-          http.Client());
-      var newDrive = ga.DriveApi(authenticatedClient(http.Client(), newCredentials));
-      _getFolderId(newDrive);
-      */
       await storage.clear();
       return null;
     }
@@ -184,9 +168,7 @@ class GoogleDrive {
     var client = await getHttpClient();
     var drive = ga.DriveApi(client);
     String? folderId = await _getFolderId(drive);
-    if (folderId == null) {
-      print("Sign-in first Error");
-    } else {
+    if (folderId != null){
       ga.File fileToUpload = ga.File();
       fileToUpload.parents = [folderId];
       fileToUpload.name = p.basename(file.absolute.path);
