@@ -496,7 +496,7 @@ class _HomePageState extends State<HomePage> {
             GoogleDriveFileSync(getDataCallback: getData),
             SunScaffold(taskList: tasks, todayData: todayData,),
             AchievementsPage(squareData: squareData,),
-            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(todayData['date']).inHours.toString())
+            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(todayData['date']).inDays.toString())
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
