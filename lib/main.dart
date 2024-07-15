@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> {
         });
         }
       else{
-        todayData['date'] = DateTime.now();
+        todayData['date'] = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
         todayData['tasks'] = {};
       }
       setState(() {
@@ -496,7 +496,7 @@ class _HomePageState extends State<HomePage> {
             GoogleDriveFileSync(getDataCallback: getData),
             SunScaffold(taskList: tasks, todayData: todayData,),
             AchievementsPage(squareData: squareData,),
-            Text(todayData.toString())
+            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(DateTime.parse(todayData['date'])).inHours.toString())
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
