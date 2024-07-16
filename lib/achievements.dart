@@ -35,7 +35,19 @@ class _AchievementsState extends State<AchievementsPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    for(int i = widget.squareData.length - 1; i > 0; i--){
+    bool allCompleted = true;
+    for(int j = 0; j < widget.squareData.last['tasks'].length; j++){
+      print(widget.squareData.last['tasks'][j]);
+      if(widget.squareData.last['tasks'][j][0] != 1){
+        allCompleted = false;
+      }
+    }
+    if(allCompleted){
+      totalCompleted++;
+      completedSquares.add(widget.squareData.last);
+    }
+
+    for(int i = widget.squareData.length - 2; i > 0; i--){
       bool allCompleted = true;
       for(int j = 0; j < widget.squareData[i]['tasks'].length; j++){
         print(widget.squareData[i]['tasks'][j]);
