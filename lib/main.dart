@@ -526,7 +526,7 @@ class _HomePageState extends State<HomePage> {
         currentWidget = Scaffold(
           appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"),),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
-              : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback, todayData: todayData,),
+              : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback, todayData: todayData, birthdayData: birthdayData),
           floatingActionButton:  Switch(
             activeColor: Theme.of(context).focusColor,
             value: _isJournal,

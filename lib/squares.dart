@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Squares extends StatelessWidget {
+  final List<Map<String, dynamic>> birthdayData;
   final List<Map<String, dynamic>> squareData;
   final List<Map<String, dynamic>> taskList;
   final ScrollController controller;
   final Function(int, int, int) setTaskCallback;
   final Map<String, dynamic> todayData;
 
-  Squares({super.key, required this.squareData, required this.taskList, required this.setTaskCallback, required this.todayData, ScrollController? controller})
+  Squares({super.key, required this.birthdayData, required this.squareData, required this.taskList, required this.setTaskCallback, required this.todayData, ScrollController? controller})
       : this.controller = controller ?? ScrollController();
 
   List getPercentage(List<List<int>> taskData){
@@ -130,7 +131,11 @@ class Squares extends StatelessWidget {
           percentage: getPercentage(squareData[index]['tasks']),
           squareIndex: index,
           setTaskCallback: setTaskCallback,
-          isHighlighted: index == squareData.length - 1
+          birthdayData: birthdayData.where((element){
+            DateTime currentDay = element['date'];
+            DateTime squareDate = squareData[index]['date'];
+            return squareDate.month == currentDay.month && squareDate.day == currentDay.day;
+          }).toList(),
       ));
       index++;
       weekIndex++;
@@ -227,15 +232,15 @@ class Squares extends StatelessWidget {
 
 class SquareItem extends StatefulWidget {
   SquareItem({super.key, required this.data ,required this.taskList, required this.percentage, required this.squareIndex, required this.setTaskCallback,
-  required this.isHighlighted, required this.todayData});
+    required this.todayData, required this.birthdayData});
 
   final Map<String, dynamic> todayData;
-  final isHighlighted;
   final int squareIndex;
   final Function(int, int, int) setTaskCallback;
   final Map<String, dynamic> data;
   final List<Map<String, dynamic>> taskList;
   final List percentage;
+  final List<Map<String, dynamic>> birthdayData;
   @override
   State<SquareItem> createState() => _SquareItemState();
 }
@@ -255,7 +260,8 @@ class _SquareItemState extends State<SquareItem> {
             taskList: widget.taskList,
             percentage: widget.percentage,
             updateTask: _UpdateCompleted,
-            getCheckList: _GetCheckList
+            getCheckList: _GetCheckList,
+            birthdayData: widget.birthdayData,
         ),
       ),
     );
@@ -283,7 +289,6 @@ class _SquareItemState extends State<SquareItem> {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor = Colors.white;
     Color squareColor = Color.fromARGB(
       200,  // Opacity set to maximum (255)
       toInt(calculateColorComponent(100, (widget.percentage[1] - widget.percentage[0]) / widget.percentage[1])),
@@ -296,13 +301,10 @@ class _SquareItemState extends State<SquareItem> {
     if(widget.percentage[0] == widget.percentage[1]){
       squareColor = const Color.fromARGB(255, 26, 120, 63);
     }
-    if(widget.isHighlighted){
-      textColor = Colors.yellow;
-    }
     return GestureDetector(
       onTap: _openPopup,
 
-    child: Padding(
+    child: Stack(children: [Padding(
       padding: EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
@@ -347,15 +349,20 @@ class _SquareItemState extends State<SquareItem> {
             ),
         ),
       )
-    )
+    ),
+      widget.birthdayData.length > 0? Icon(Icons.cake, size: 15.0,) : SizedBox(height: 0,)
+    ])
     );
   }
 }
 
 
 class EditSquare extends StatefulWidget {
-  EditSquare({super.key, required this.data ,required this.taskList, required this.percentage, required this.updateTask, required this.getCheckList, required this.todayData});
+  EditSquare({super.key,
+    required this.data ,required this.taskList, required this.percentage, required this.updateTask,
+    required this.getCheckList, required this.todayData, required this.birthdayData});
 
+  final List<Map<String, dynamic>> birthdayData;
   final Map<String, dynamic> data;
   final Map<String, dynamic> todayData;
   final List<Map<String, dynamic>> taskList;
@@ -477,6 +484,16 @@ class _EditSquareState extends State<EditSquare> {
               },
             ),
           ),
+          if(widget.birthdayData.length > 0)
+            Expanded(child: ListView.builder(
+                itemCount: widget.birthdayData.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      leading: Icon(Icons.cake, color: widget.birthdayData[index]['color']),
+                      title: Text(widget.birthdayData[index]['name'])
+                  );
+                }
+            )),
         ],
       ),
     );
