@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:squared_away/achievements.dart';
+import 'package:squared_away/birthday.dart';
 import 'package:squared_away/journal.dart';
 import 'package:squared_away/statistics.dart';
 import 'package:squared_away/sundial.dart';
@@ -121,7 +122,11 @@ class _HomePageState extends State<HomePage> {
     return newFile;
   }
 
-  Future<File> writeTaskList(List<Map<String, dynamic>> tasks, List<Map<String, dynamic>> squareData, Map<String, dynamic> todayData) async {
+  Future<File> writeTaskList(
+      List<Map<String, dynamic>> tasks,
+      List<Map<String, dynamic>> squareData,
+      Map<String, dynamic> todayData,
+      List<Map<String, dynamic>> birthdayData) async {
     final file = await _localFile;
     Map<String, dynamic> allData = {
       "tasks": tasks.map(
@@ -150,6 +155,16 @@ class _HomePageState extends State<HomePage> {
         "date": todayData['date'].toString(),
         "tasks": todayData['tasks'].map((key, value) => MapEntry(key.toString(), value.toString()))
       },
+      "birthdays": birthdayData.map(
+          (Map<String, dynamic> birthday){
+            return{
+              'name': birthday['name'],
+              'date': birthday['date'].toString(),
+              'color': birthday['color'].value,
+              'index': birthday['index']
+            };
+          }
+      ).toList()
     };
     String jsonTaskList = jsonEncode(allData);
     return file.writeAsString(jsonTaskList);
@@ -193,6 +208,8 @@ class _HomePageState extends State<HomePage> {
   bool _loading = true;
   int themeId = 0;
   Map<String, dynamic> todayData = {};
+  late PageController _pageController;
+  List<Map<String,dynamic>> birthdayData = [];
 
   Future<Map<String, dynamic>> _readData() async {
     try{
@@ -352,6 +369,16 @@ class _HomePageState extends State<HomePage> {
         todayData['date'] = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
         todayData['tasks'] = {};
       }
+      if(allData['birthdays'] != null){
+        for(int i = 0; i < allData['birthdays'].length; i++){
+          birthdayData.add({
+            "name": allData['birthdays'][i]['name'],
+            'date': DateTime.parse(allData['birthdays'][i]['date']),
+            'color': Color(allData['birthdays'][i]['color']),
+            'index': allData['birthdays'][i]['index']
+          });
+        }
+      }
       setState(() {
         _loading = false;
       });
@@ -362,6 +389,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loading = true;
+    _pageController = PageController(initialPage: _pageIndex);
     getData();
   }
 
@@ -376,7 +404,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       squareData[squareIndex]['tasks'][taskIndex][0] = value;
     });
-    writeTaskList(tasks, squareData, todayData);
+    writeTaskList(tasks, squareData, todayData, birthdayData);
   }
 
   void addTaskCallback(String taskName, Color newColor, List<bool> checkedDays){
@@ -403,7 +431,7 @@ class _HomePageState extends State<HomePage> {
         squareData.last['tasks'].add([0,tasks.length - 1]);
       }
     });
-    writeTaskList(tasks, squareData, todayData);
+    writeTaskList(tasks, squareData, todayData, birthdayData);
   }
 
   void updateTaskCallback(String taskName, Color newColor, List<bool> checkedDays, int taskIndex){
@@ -427,7 +455,7 @@ class _HomePageState extends State<HomePage> {
         }
       };
     });
-    writeTaskList(tasks, squareData, todayData);
+    writeTaskList(tasks, squareData, todayData, birthdayData);
   }
   
   removeTaskCallback(int index){
@@ -456,11 +484,37 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       themeId = Id;
     });
-    writeTaskList(tasks, squareData, todayData);
+    writeTaskList(tasks, squareData, todayData, birthdayData);
+  }
+
+  void addBirthdayCallback(String name, Color selectedColor, DateTime birthDate){
+    if(name.length < 1){
+      return;
+    }
+    birthdayData.add({
+      'index': birthdayData.length,
+      'date': birthDate,
+      'name': name,
+      'color': selectedColor,
+    });
+    writeTaskList(tasks, squareData, todayData, birthdayData);
   }
 
 
   bool _isJournal = false;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _pageIndex = index;
+    });
+  }
+
 
 
   @override
@@ -496,7 +550,8 @@ class _HomePageState extends State<HomePage> {
             GoogleDriveFileSync(getDataCallback: getData),
             SunScaffold(taskList: tasks, todayData: todayData,),
             AchievementsPage(squareData: squareData,),
-            Text(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0).difference(todayData['date']).inDays.toString())
+            BirthdayPage(birthdayData: birthdayData,addNewBirthday: addBirthdayCallback,),
+            Text(birthdayData.toString())
           ],
           icons: [
             Icon(Icons.auto_awesome_outlined, semanticLabel: "testing",),
@@ -505,6 +560,7 @@ class _HomePageState extends State<HomePage> {
             Icon(Icons.file_copy_outlined),
             Icon(Icons.sunny),
             Icon(Icons.fireplace),
+            Icon(Icons.cake),
             Icon(Icons.bug_report)
           ],
           subtitles: ["Habits", "Statistics", "Theme", "Sync to Drive", "Sundial", "Debug"],
@@ -516,7 +572,13 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: Center(
-        child: _loading? CircularProgressIndicator() : currentWidget,
+        child: _loading ? CircularProgressIndicator() : PageView(
+          controller: _pageController,
+          onPageChanged: _onPageChanged,
+          children: [
+            currentWidget
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,
@@ -526,13 +588,13 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).primaryColor,
         items: [
           BottomNavigationBarItem(
-              icon:  _isJournal?  Icon(Icons.chrome_reader_mode, color: Theme.of(context).focusColor) :
-                                  Icon(Icons.dataset_outlined, color: Theme.of(context).focusColor),
-              label: _isJournal? "Journal": "Squares",
+            icon: _isJournal ? Icon(Icons.chrome_reader_mode, color: Theme.of(context).focusColor) :
+            Icon(Icons.dataset_outlined, color: Theme.of(context).focusColor),
+            label: _isJournal ? "Journal" : "Squares",
           ),
           BottomNavigationBarItem(
-              icon:  Icon(Icons.blender_outlined, color: Theme.of(context).focusColor),
-              label: "Blender!!"
+            icon: Icon(Icons.blender_outlined, color: Theme.of(context).focusColor),
+            label: "Blender!!",
           ),
         ],
       ),
