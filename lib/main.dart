@@ -311,11 +311,11 @@ class _HomePageState extends State<HomePage> {
       else{
         for(int i = 0; i < allData['tasks'].length; i++){
           tasks.add({
-            'name': allData['tasks'][i]['name'],
-            'index': allData['tasks'][i]['index'],
-            'hidden': allData['tasks'][i]['hidden'],
-            'color': Color(allData['tasks'][i]['color']),
-            'days': allData['tasks'][i]['days'],
+            'name': allData['tasks'][i]['name'] ?? "",
+            'index': allData['tasks'][i]['index'] ?? 0,
+            'hidden': allData['tasks'][i]['hidden'] ?? false,
+            'color': Color(allData['tasks'][i]['color'] ?? Colors.white.value),
+            'days': allData['tasks'][i]['days'] ?? DateTime.now(),
           });
         }
       }
@@ -326,12 +326,12 @@ class _HomePageState extends State<HomePage> {
        for(int i = 0; i < allData['squareData'].length; i++){
          List<List<int>> taskList = [];
          for(int j = 0; j < allData['squareData'][i]['tasks'].length; j++){
-           taskList.add([allData['squareData'][i]['tasks'][j][0],allData['squareData'][i]['tasks'][j][1]]);
+           taskList.add([allData['squareData'][i]['tasks'][j][0] ?? 0,allData['squareData'][i]['tasks'][j][1] ?? 0]);
          }
          squareData.add({
-           'date': DateTime.parse(allData['squareData'][i]['date']),
-           'month': allData['squareData'][i]['month'],
-           'isMonth': allData['squareData'][i]['isMonth'],
+           'date': DateTime.parse(allData['squareData'][i]['date'] ?? "2001-01-01"),
+           'month': allData['squareData'][i]['month'] ?? 1,
+           'isMonth': allData['squareData'][i]['isMonth'] ?? false,
            'tasks': taskList,
          });
        }
@@ -341,25 +341,25 @@ class _HomePageState extends State<HomePage> {
       }
       if(allData['theme'] != null && allData['theme'].length > 0){
         setState(() {
-          themeId = allData['theme'][0];
+          themeId = allData['theme'][0] ?? 0;
         });
 
         Provider.of<ThemeProvider>(context, listen: false).setTheme(
             ThemeData(
-              brightness: themes[themeId]['isDark']? Brightness.dark : Brightness.light,
-              primaryColor:  themes[themeId]['primary'],
-              focusColor: themes[themeId]['focus'],
+              brightness: themes[themeId]['isDark'] ?? false ? Brightness.dark : Brightness.light,
+              primaryColor:  themes[themeId]['primary'] ?? Color.fromARGB(200, 34, 34, 34),
+              focusColor: themes[themeId]['focus'] ?? Color.fromARGB(255, 200, 230, 230),
             )
         );
       }
       if(allData['today'] != null && DateTime.now().difference(DateTime.parse(allData['today']['date'])).inDays < 1){
         // TODO: Fix this nonsense
-        todayData['date'] = DateTime.parse(allData['today']['date']);
+        todayData['date'] = DateTime.parse(allData['today']['date'] ?? "2001-01-01");
         // Define the todayData map
         todayData['tasks'] = {};
 
         // Parse the tasks from allData and add them to todayData
-        allData['today']['tasks'].forEach((key, value) {
+        allData['today']['tasks'] ?? {}.forEach((key, value) {
           int intKey = int.parse(key); // Convert the key to int
           DateTime dateValue = DateTime.parse(value); // Convert the value to DateTime
           todayData['tasks'][intKey] = dateValue; // Add the entry to todayData
@@ -372,10 +372,10 @@ class _HomePageState extends State<HomePage> {
       if(allData['birthdays'] != null){
         for(int i = 0; i < allData['birthdays'].length; i++){
           birthdayData.add({
-            "name": allData['birthdays'][i]['name'],
-            'date': DateTime.parse(allData['birthdays'][i]['date']),
-            'color': Color(allData['birthdays'][i]['color']),
-            'index': allData['birthdays'][i]['index']
+            "name": allData['birthdays'][i]['name'] ?? "",
+            'date': DateTime.parse(allData['birthdays'][i]['date'] ?? "2001-01-01"),
+            'color': Color(allData['birthdays'][i]['color'] ?? Colors.white.value),
+            'index': allData['birthdays'][i]['index'] ?? 0
           });
         }
       }
