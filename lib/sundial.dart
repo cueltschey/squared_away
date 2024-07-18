@@ -2,11 +2,63 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
 
-class SunPainter extends CustomPainter {
+class SunAnimationScreen extends StatefulWidget {
   final double progress; // 0.0 to 1.0, where 0.0 is sunrise and 1.0 is sunset
   final List<double> taskProgressArray;
   final List<Color> taskColorArray;
 
+  SunAnimationScreen({required this.progress, required this.taskColorArray, required this.taskProgressArray});
+
+  @override
+  _SunAnimationScreenState createState() => _SunAnimationScreenState();
+}
+
+class _SunAnimationScreenState extends State<SunAnimationScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+        if(_animation.value >= widget.progress){
+          _controller.stop();
+        }
+      });
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(MediaQuery.of(context).size.width, 400),
+      painter: SunPainter(
+        progress: _animation.value,
+        taskProgressArray: widget.taskProgressArray,
+        taskColorArray: widget.taskColorArray,
+      ),
+    );
+  }
+}
+
+class SunPainter extends CustomPainter {
+  final double progress; // 0.0 to 1.0, where 0.0 is sunrise and 1.0 is sunset
+  final List<double> taskProgressArray;
+  final List<Color> taskColorArray;
 
   SunPainter({required this.progress, required this.taskColorArray, required this.taskProgressArray});
 
@@ -14,7 +66,7 @@ class SunPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Color paintColor = Colors.orange;
     Color arcColor = Colors.yellow;
-    if(progress > 0.8 || progress < 0.2){
+    if (progress > 0.8 || progress < 0.2) {
       paintColor = Colors.grey;
       arcColor = Color.fromARGB(255, 34, 34, 34);
     }
@@ -34,7 +86,7 @@ class SunPainter extends CustomPainter {
     );
     canvas.drawArc(arcRect, pi, pi, false, arcPaint);
 
-    for(int i = 0; i < taskProgressArray.length; i++){
+    for (int i = 0; i < taskProgressArray.length; i++) {
       final double angle = pi * taskProgressArray[i];
       final double x = size.width / 2 + (size.width / 2) * cos(angle);
       final double y = size.height / 1.2 + (size.width / 2) * sin(angle) * -1;
@@ -115,9 +167,10 @@ class _SunScaffoldState extends State<SunScaffold> {
       body: Column(
         children: [
           Padding(
-                child: CustomPaint(
-                  size: Size(MediaQuery.of(context).size.width, 400),
-                  painter: SunPainter(progress: _progress, taskProgressArray: _taskProgressArray, taskColorArray: _taskColorArray),
+                child: SunAnimationScreen(
+                  progress: _progress,
+                  taskColorArray: _taskColorArray,
+                  taskProgressArray: _taskProgressArray,
                 ),
                 padding: EdgeInsets.all(30.0)
             ),
