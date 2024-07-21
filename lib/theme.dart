@@ -28,7 +28,7 @@ class _ThemePickerState extends State<ThemePicker>{
   List<Color> _selectedColors = [
     Color.fromARGB(200, 34, 34, 34),
     Color.fromARGB(255, 200, 200, 200),
-    Color.fromARGB(255, 14, 14, 14),
+    Color.fromARGB(255, 14, 34, 14),
   ];
   bool _isCustomDark = true;
 
@@ -125,15 +125,15 @@ class _ThemePickerState extends State<ThemePicker>{
             children: [
               GestureDetector(
                 onTap: () => _pickColor(context, 0),
-                child: Icon(Icons.circle, color: _selectedColors[0])
+                child: Icon(Icons.circle, color: _selectedColors[0], size: 40)
               ),
               GestureDetector(
                   onTap: () => _pickColor(context, 1),
-                  child: Icon(Icons.circle, color: _selectedColors[1])
+                  child: Icon(Icons.circle, color: _selectedColors[1], size: 40)
               ),
               GestureDetector(
                   onTap: () => _pickColor(context, 2),
-                  child: Icon(Icons.circle, color: _selectedColors[2])
+                  child: Icon(Icons.circle, color: _selectedColors[2], size: 40)
               ),
               Switch(value: _isCustomDark, onChanged: (bool? checked) => setState(() =>
                 _isCustomDark = checked!
