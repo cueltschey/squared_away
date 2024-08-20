@@ -14,6 +14,10 @@ import 'package:squared_away/options.dart';
 import 'package:provider/provider.dart';
 import 'theme.dart';
 import 'package:squared_away/drive.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 
 void main() async {
@@ -54,6 +58,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<TargetFocus> targets = [];
+  GlobalKey keySquare = GlobalKey();
 
   final List<Map<String, dynamic>> themes = [
     {
@@ -378,6 +384,56 @@ class _HomePageState extends State<HomePage> {
     _loading = true;
     _pageController = PageController(initialPage: _pageIndex);
     getData();
+    initTargets();
+    WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
+  }
+
+  void initTargets() {
+    targets.add(TargetFocus(
+      identify: "AppBar",
+      keyTarget: keySquare,
+      color: Colors.blue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.bottom,
+          child: Text(
+            "This is a button. Tap it to do something.",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    ));
+  }
+
+  void showTutorial(BuildContext context) {
+    TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      alignSkip: Alignment.topRight,
+      onFinish: () {
+        print("Tutorial finished");
+      },
+      onClickTarget: (target) {
+        print(target);
+      },
+      onSkip: () {
+        print("Tutorial skipped");
+        return true;
+      },
+    ).show(context: context);
+  }
+
+  void _afterLayout(_) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('hasSeenTutorial', false);
+    bool hasSeenTutorial = prefs.getBool('hasSeenTutorial') ?? false;
+
+    if (!hasSeenTutorial) {
+      showTutorial(context);
+      prefs.setBool('hasSeenTutorial', true);
+    }
   }
 
   int _pageIndex = 0;
@@ -511,7 +567,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         DateTime now = DateTime.now();
         currentWidget = Scaffold(
-          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares"),),
+          appBar: AppBar(title: _isJournal? Text("Journal"): Text("Squares", key: keySquare),),
           body: _isJournal? Journal(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback)
               : Squares(squareData: squareData, taskList: tasks, setTaskCallback: setTaskCallback, todayData: todayData, birthdayData: birthdayData),
           floatingActionButton:  Switch(
